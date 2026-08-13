@@ -169,8 +169,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-semibold tracking-tight">Canlı demoyu inceleyin</h2>
           <p className="mx-auto mt-3 max-w-xl text-indigo-100">Örnek firmaların markalı müşteri sitelerini keşfedin.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/s/prishtina-rent" className="btn bg-white text-indigo-700 hover:bg-indigo-50">Prishtina Rent a Car</Link>
-            <Link href="/s/prizren-cars" className="btn border border-white/40 text-white hover:bg-white/10">Prizren Cars</Link>
+            <Link href="/s/prishtina" className="btn bg-white text-indigo-700 hover:bg-indigo-50">Prishtina Rent a Car</Link>
             <Link href="/login" className="btn border border-white/40 text-white hover:bg-white/10">Yönetim Paneli</Link>
           </div>
         </div>
