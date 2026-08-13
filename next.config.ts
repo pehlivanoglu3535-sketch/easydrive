@@ -1,8 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Docker/production: bağımsız (standalone) çıktı — küçük imaj, node_modules kopyalanmaz.
-  output: "standalone",
+  // Docker'da `next start` + tam node_modules ile çalışıyoruz (standalone kullanılmıyor).
 };
 
 export default nextConfig;
