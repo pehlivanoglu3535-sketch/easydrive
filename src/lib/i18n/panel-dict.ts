@@ -113,6 +113,7 @@ const tr = {
     staff: "Personel & Yöneticiler", staffDesc: "Panele giriş yapabilecek kullanıcılar", roleOffice: "Ofis Personeli (tam yetki)", roleHandover: "Araç Teslim Personeli", roleAdmin: "Yönetici",
     staffName: "Ad Soyad", staffEmail: "E-posta", staffPass: "Şifre (min 6)", branchAll: "Şube: Tümü / Merkez", branchPrefix: "Şube:", addStaff: "Personel Ekle", staffAdded: "Personel eklendi.", you: "(siz)",
     fuelFull: "Dolu",
+    customDomain: "Kendi Domaininiz", customDomainHint: "Firmanızın kendi domainini bağlayın. Domaininizin DNS'inde bir A kaydı ekleyin: 2.28.15.83. Sonra siteniz kendi adresinizden açılır; SSL otomatik alınır.",
   },
   handover: {
     title: "Araç Teslim / İade", subtitle: "Onaylı rezervasyonların araç teslim ve iade kontrolü.", savedOk: "Kontrol formu kaydedildi.",
@@ -241,6 +242,7 @@ const sq: PanelDict = {
     staff: "Punonjësit & Menaxherët", staffDesc: "Përdoruesit që mund të hyjnë në panel", roleOffice: "Punonjës Zyre (të drejta të plota)", roleHandover: "Punonjës Dorëzimi", roleAdmin: "Menaxher",
     staffName: "Emri dhe Mbiemri", staffEmail: "Email", staffPass: "Fjalëkalimi (min 6)", branchAll: "Dega: Të gjitha / Qendra", branchPrefix: "Dega:", addStaff: "Shto Punonjës", staffAdded: "Punonjësi u shtua.", you: "(ju)",
     fuelFull: "Plot",
+    customDomain: "Domeni Juaj", customDomainHint: "Lidhni domenin tuaj. Shtoni një rekord A në DNS të domenit tuaj: 2.28.15.83. Pastaj faqja juaj hapet nga adresa juaj; SSL merret automatikisht.",
   },
   handover: {
     title: "Dorëzimi / Kthimi i Veturës", subtitle: "Kontrolli i dorëzimit dhe kthimit për rezervimet e konfirmuara.", savedOk: "Formulari i kontrollit u ruajt.",
@@ -367,6 +369,7 @@ const en: PanelDict = {
     staff: "Staff & Managers", staffDesc: "Users who can sign in to the panel", roleOffice: "Office Staff (full access)", roleHandover: "Handover Staff", roleAdmin: "Manager",
     staffName: "Full Name", staffEmail: "Email", staffPass: "Password (min 6)", branchAll: "Branch: All / Head office", branchPrefix: "Branch:", addStaff: "Add Staff", staffAdded: "Staff added.", you: "(you)",
     fuelFull: "Full",
+    customDomain: "Your Own Domain", customDomainHint: "Connect your company's own domain. Add an A record in your domain's DNS: 2.28.15.83. Then your site opens from your own address; SSL is obtained automatically.",
   },
   handover: {
     title: "Vehicle Handover / Return", subtitle: "Handover and return checks for confirmed reservations.", savedOk: "Check form saved.",

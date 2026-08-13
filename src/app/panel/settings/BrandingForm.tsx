@@ -19,6 +19,7 @@ type Company = {
   instagram: string | null;
   facebook: string | null;
   whatsapp: string | null;
+  customDomain: string | null;
 };
 
 const LOCALES = [
@@ -160,6 +161,11 @@ export function BrandingForm({ company, labels, commonLabels }: { company: Compa
         <div>
           <label className="label" htmlFor="facebook">{S.facebook}</label>
           <input id="facebook" name="facebook" className="input" defaultValue={company.facebook ?? ""} placeholder="facebook.com/sayfa" />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="label" htmlFor="customDomain">{S.customDomain}</label>
+          <input id="customDomain" name="customDomain" className="input" defaultValue={company.customDomain ?? ""} placeholder="rezervasyon.firmaniz.com" />
+          <p className="mt-1 text-xs text-slate-400">{S.customDomainHint}</p>
         </div>
       </div>
 

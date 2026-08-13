@@ -95,6 +95,7 @@ model Company {
   id            String        @id @default(cuid())
   name          String
   slug          String        @unique // markalı site adresi: /s/<slug>
+  customDomain  String?       @unique // firmanın kendi domaini (ör. rezervasyon.mararent.com) → markalı site
   logoUrl       String?
   primaryColor  String        @default("#2563eb")
   status        CompanyStatus @default(TRIAL)

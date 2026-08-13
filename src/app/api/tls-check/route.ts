@@ -22,7 +22,12 @@ export async function GET(req: Request) {
       const company = await prisma.company.findUnique({ where: { slug: sub }, select: { id: true } });
       if (company) return new Response("ok");
     }
+    return new Response("not allowed", { status: 403 });
   }
+
+  // Firmanın kendi domaini (custom domain) — Seviye 2.
+  const byDomain = await prisma.company.findUnique({ where: { customDomain: domain }, select: { id: true } });
+  if (byDomain) return new Response("ok");
 
   return new Response("not allowed", { status: 403 });
 }

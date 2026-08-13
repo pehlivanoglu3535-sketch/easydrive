@@ -43,6 +43,14 @@ export async function updateCompanySettingsAction(
   const facebook = String(formData.get("facebook") || "").trim() || null;
   const whatsapp = String(formData.get("whatsapp") || "").trim() || null;
 
+  // Custom domain (firmanın kendi domaini): protokol/yol/www temizle.
+  const customDomain =
+    String(formData.get("customDomain") || "")
+      .trim().toLowerCase()
+      .replace(/^https?:\/\//, "")
+      .replace(/\/.*$/, "")
+      .replace(/^www\./, "") || null;
+
   if (!name) return { error: "Firma adı zorunludur." };
 
   // Logo: yeni dosya yüklendiyse onu kullan, yoksa URL alanını (varsa) koru
@@ -67,14 +75,21 @@ export async function updateCompanySettingsAction(
     logoUrl = undefined; // ne dosya ne URL: mevcut logoyu koru
   }
 
-  await prisma.company.update({
-    where: { id: session.companyId },
-    data: {
-      name, primaryColor, defaultLocale, contactEmail, contactPhone, address, city,
-      taxId, website, instagram, facebook, whatsapp,
-      ...(logoUrl !== undefined ? { logoUrl } : {}),
-    },
-  });
+  try {
+    await prisma.company.update({
+      where: { id: session.companyId },
+      data: {
+        name, primaryColor, defaultLocale, contactEmail, contactPhone, address, city,
+        taxId, website, instagram, facebook, whatsapp, customDomain,
+        ...(logoUrl !== undefined ? { logoUrl } : {}),
+      },
+    });
+  } catch (e: unknown) {
+    if (e && typeof e === "object" && "code" in e && (e as { code?: string }).code === "P2002") {
+      return { error: "Bu domain başka bir firma tarafından kullanılıyor." };
+    }
+    throw e;
+  }
   revalidatePath("/panel/settings");
   revalidatePath("/panel");
   return { ok: true };

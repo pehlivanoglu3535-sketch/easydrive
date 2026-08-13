@@ -7,7 +7,7 @@ echo "[entrypoint] Veritabanı bekleniyor & şema senkronlanıyor…"
 # fark yoksa hızlı geçer. (Migration geçmişi olmadan doğrudan senkron — tek uygulama SaaS için güvenli.)
 # Bağlantı hazır olana kadar birkaç kez dene (compose'ta db healthcheck de var).
 tries=0
-until node node_modules/prisma/build/index.js db push --skip-generate; do
+until node node_modules/prisma/build/index.js db push --skip-generate --accept-data-loss; do
   tries=$((tries + 1))
   if [ "$tries" -ge 10 ]; then
     echo "[entrypoint] Veritabanına bağlanılamadı (10 deneme)." >&2
