@@ -7,11 +7,11 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "RentFlow — Araç Kiralama Yazılımı",
+  title: "EasyDrive — Araç Kiralama Yazılımı",
   description: "Kosova için bulut tabanlı araç kiralama yönetim platformu",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "RentFlow", statusBarStyle: "default" },
-  icons: { icon: "/icon.svg", apple: "/icon.svg" },
+  appleWebApp: { capable: true, title: "EasyDrive", statusBarStyle: "default" },
+  icons: { icon: "/logo.png", apple: "/logo.png" },
 };
 
 export const viewport: Viewport = {

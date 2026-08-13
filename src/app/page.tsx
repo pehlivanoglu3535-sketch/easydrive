@@ -20,8 +20,9 @@ export default function LandingPage() {
       <header className="sticky top-0 z-40 border-b bg-white/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white"><Car size={18} /></div>
-            <span className="text-lg font-semibold tracking-tight">RentFlow</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="EasyDrive" className="h-9 w-9 object-contain" />
+            <span className="text-lg font-semibold tracking-tight">EasyDrive</span>
           </div>
           <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
             <a href="#features" className="hover:text-slate-900">Özellikler</a>
@@ -179,10 +180,11 @@ export default function LandingPage() {
       <footer className="border-t bg-white">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm text-slate-500 sm:flex-row md:px-6">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white"><Car size={15} /></div>
-            <span className="font-semibold text-slate-700">RentFlow</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="EasyDrive" className="h-7 w-7 object-contain" />
+            <span className="font-semibold text-slate-700">EasyDrive</span>
           </div>
-          <span>© {new Date().getFullYear()} RentFlow — Kosova Araç Kiralama Platformu</span>
+          <span>© {new Date().getFullYear()} EasyDrive — Kosova Araç Kiralama Platformu</span>
         </div>
       </footer>
     </div>

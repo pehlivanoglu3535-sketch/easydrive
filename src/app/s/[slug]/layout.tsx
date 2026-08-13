@@ -39,7 +39,7 @@ export default async function SiteLayout({
             {company.contactPhone && <a href={`tel:${company.contactPhone}`} className="inline-flex items-center gap-1.5 hover:text-slate-900"><Phone size={14} /> {company.contactPhone}</a>}
             {company.contactEmail && <a href={`mailto:${company.contactEmail}`} className="inline-flex items-center gap-1.5 hover:text-slate-900"><Mail size={14} /> {company.contactEmail}</a>}
           </span>
-          <span className="text-xs text-slate-400">{dict.footer.poweredBy} RentFlow</span>
+          <span className="text-xs text-slate-400">{dict.footer.poweredBy} EasyDrive</span>
         </div>
       </footer>
     </div>

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Shield } from "lucide-react";
 import { requireSuperAdmin } from "@/lib/auth";
 import { LogoutButton } from "@/components/LogoutButton";
 
@@ -15,11 +14,10 @@ export default async function AdminLayout({
       <header className="sticky top-0 z-30 border-b bg-white">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
           <Link href="/admin" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
-              <Shield size={17} />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="EasyDrive" className="h-8 w-8 object-contain" />
             <div className="leading-tight">
-              <div className="text-sm font-semibold">RentFlow</div>
+              <div className="text-sm font-semibold">EasyDrive</div>
               <div className="text-xs text-slate-400">Platform Yönetimi</div>
             </div>
           </Link>
