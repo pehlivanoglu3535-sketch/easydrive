@@ -23,3 +23,13 @@
 	encode gzip
 	reverse_proxy app:3000
 }
+
+# Firmaların KENDİ domainleri (Seviye 2) — herhangi bir host. On-demand TLS,
+# "ask" ucu yalnızca geçerli firma domainine sertifika verir.
+https:// {
+	tls {
+		on_demand
+	}
+	encode gzip
+	reverse_proxy app:3000
+}
