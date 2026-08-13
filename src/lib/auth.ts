@@ -8,14 +8,25 @@ import type { Role, Locale } from "@prisma/client";
 
 const COOKIE_NAME = "rentacar_session";
 
-if (process.env.NODE_ENV === "production" && !process.env.AUTH_SECRET) {
-  throw new Error(
-    "AUTH_SECRET ayarlanmamış. Production'da güçlü, rastgele bir değer verin (openssl rand -base64 48)."
-  );
+// Oturum imzalama anahtarı — tembel (ilk KULLANIMDA) hesaplanır, modül yüklenirken değil.
+// Böylece derleme (next build) sırasında env yokken hata vermez; production'da eksikse
+// ilk istekte net bir hata verir.
+let _secret: Uint8Array | null = null;
+function secretKey(): Uint8Array {
+  if (_secret) return _secret;
+  const val = process.env.AUTH_SECRET;
+  if (!val) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "AUTH_SECRET ayarlanmamış. Production'da güçlü, rastgele bir değer verin (openssl rand -base64 48)."
+      );
+    }
+    _secret = new TextEncoder().encode("dev-secret-change-me-in-production-please-1234567890");
+  } else {
+    _secret = new TextEncoder().encode(val);
+  }
+  return _secret;
 }
-const secret = new TextEncoder().encode(
-  process.env.AUTH_SECRET || "dev-secret-change-me-in-production-please-1234567890"
-);
 
 export type SessionPayload = {
   userId: string;
@@ -40,7 +51,7 @@ export async function createSession(payload: SessionPayload) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
-    .sign(secret);
+    .sign(secretKey());
 
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, token, {
@@ -62,7 +73,7 @@ export async function getSession(): Promise<SessionPayload | null> {
   const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) return null;
   try {
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, secretKey());
     return payload as unknown as SessionPayload;
   } catch {
     return null;
