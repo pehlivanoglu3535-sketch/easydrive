@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+:root {
+  /* Yüzeyler */
+  --background: #f6f7f9;
+  --surface: #ffffff;
+  --foreground: #0b1220;
+  --muted: #667085;
+
+  /* Marka (uygulama iç arayüzü) */
+  --brand: #4f46e5;
+  --brand-600: #4f46e5;
+  --brand-700: #4338ca;
+  --brand-50: #eef2ff;
+
+  /* Kenarlık & gölge */
+  --border: #e6e8ec;
+  --ring: rgba(79, 70, 229, 0.15);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  letter-spacing: -0.02em;
+}
+
+@layer components {
+  /* ---------- Butonlar ---------- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer select-none whitespace-nowrap;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap text-white shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none;
+    background-color: var(--brand-600);
+  }
+  .btn-primary:hover:not(:disabled) { background-color: var(--brand-700); }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap border bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-300 disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap text-slate-600 hover:bg-slate-100 hover:text-slate-900;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap bg-red-600 text-white shadow-sm hover:bg-red-700;
+  }
+  .btn-sm { @apply px-3 py-1.5 text-xs; }
+
+  /* ---------- Form ---------- */
+  .input {
+    @apply w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400;
+  }
+  .input:focus {
+    border-color: var(--brand-600);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-slate-700;
+  }
+
+  /* ---------- Kart ---------- */
+  .card {
+    @apply rounded-xl border bg-white;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.04);
+  }
+  .card-hover { @apply transition-all duration-150 hover:-translate-y-0.5; }
+  .card-hover:hover { box-shadow: 0 4px 12px rgba(16, 24, 40, 0.08); }
+
+  /* ---------- Badge ---------- */
+  .badge {
+    @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset;
+  }
+
+  /* ---------- Tablo ---------- */
+  .table-head {
+    @apply border-b bg-slate-50/60 text-left text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+  .table-row {
+    @apply border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50/70;
+  }
+
+  /* ---------- Sidebar link ---------- */
+  .nav-link {
+    @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900;
+  }
+  .nav-link-active {
+    background-color: var(--brand-50);
+    color: var(--brand-700);
+  }
+  .nav-link-active:hover { background-color: var(--brand-50); }
+}
+
+/* İnce kaydırma çubuğu */
+::-webkit-scrollbar { height: 8px; width: 8px; }
+::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }

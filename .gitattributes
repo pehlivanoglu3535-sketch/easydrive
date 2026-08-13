@@ -1,0 +1,16 @@
+# Depoda ve Linux checkout'ta LF satır sonu zorla (Windows'ta geliştirsek bile).
+# Özellikle .sh dosyaları Linux'ta LF olmazsa "bad interpreter" hatası verir.
+* text=auto eol=lf
+
+*.sh    text eol=lf
+*.mjs   text eol=lf
+Dockerfile text eol=lf
+
+# İkili dosyalar — dokunma
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.db  binary

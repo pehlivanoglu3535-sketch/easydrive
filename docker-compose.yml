@@ -1,0 +1,46 @@
+# ─── RentFlow production stack ───
+# Kullanım:  cp .env.production.example .env  →  doldur  →  docker compose up -d --build
+# Düz VPS'te de, Coolify/Dokku'da da çalışır. Verile­r kalıcı volume'larda.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-rentflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD gerekli}
+      POSTGRES_DB: ${POSTGRES_DB:-rentflow}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rentflow} -d ${POSTGRES_DB:-rentflow}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Uygulama içinden db servisine bağlantı (compose ağı).
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-rentflow}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-rentflow}?schema=public"
+      AUTH_SECRET: ${AUTH_SECRET:?AUTH_SECRET gerekli}
+      NODE_ENV: production
+      # İlk açılışta süper-admin oluşturulması için (bir kez; sonra kaldırabilirsin).
+      SUPER_ADMIN_EMAIL: ${SUPER_ADMIN_EMAIL:-}
+      SUPER_ADMIN_PASSWORD: ${SUPER_ADMIN_PASSWORD:-}
+      SUPER_ADMIN_NAME: ${SUPER_ADMIN_NAME:-}
+    volumes:
+      # Yüklenen logolar / araç fotoğrafları / imzalar — kalıcı.
+      - uploads:/app/public/uploads
+    ports:
+      - "${APP_PORT:-3000}:3000"
+
+volumes:
+  pgdata:
+  uploads:
