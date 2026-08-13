@@ -15,8 +15,9 @@ export async function loginAction(
     .toLowerCase();
   const password = String(formData.get("password") || "");
 
+  // Hata kodları döner; kullanıcıya gösterilen metin client'ta (dile göre) çevrilir.
   if (!email || !password) {
-    return { error: "E-posta ve şifre gereklidir." };
+    return { error: "missing" };
   }
 
   const user = await prisma.user.findUnique({
@@ -24,12 +25,12 @@ export async function loginAction(
     include: { company: true },
   });
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
-    return { error: "E-posta veya şifre hatalı." };
+    return { error: "invalid" };
   }
 
   // Firma askıya alınmışsa (süper admin hariç) girişi engelle
   if (user.role !== "SUPER_ADMIN" && user.company?.status === "SUSPENDED") {
-    return { error: "Firmanızın erişimi askıya alınmış. Lütfen bizimle iletişime geçin." };
+    return { error: "suspended" };
   }
 
   await createSession({

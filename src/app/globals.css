@@ -7,15 +7,17 @@
   --foreground: #0b1220;
   --muted: #667085;
 
-  /* Marka (uygulama iç arayüzü) */
-  --brand: #4f46e5;
-  --brand-600: #4f46e5;
-  --brand-700: #4338ca;
-  --brand-50: #eef2ff;
+  /* Marka (uygulama iç arayüzü) — EasyDrive logosuna uygun mavi + turuncu vurgu */
+  --brand: #1d4ed8;
+  --brand-600: #1d4ed8;
+  --brand-700: #1e3a8a;
+  --brand-50: #eff4ff;
+  --accent: #f97316;
+  --accent-600: #ea6a0c;
 
   /* Kenarlık & gölge */
   --border: #e6e8ec;
-  --ring: rgba(79, 70, 229, 0.15);
+  --ring: rgba(29, 78, 216, 0.18);
 }
 
 @theme inline {
@@ -52,6 +54,13 @@ h1, h2, h3, h4 {
     background-color: var(--brand-600);
   }
   .btn-primary:hover:not(:disabled) { background-color: var(--brand-700); }
+
+  /* Turuncu vurgu butonu (logo aksan rengi) — öne çıkan CTA'lar için */
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap text-white shadow-sm hover:shadow disabled:opacity-50;
+    background-color: var(--accent);
+  }
+  .btn-accent:hover:not(:disabled) { background-color: var(--accent-600); }
 
   .btn-outline {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap border bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-300 disabled:opacity-50;
