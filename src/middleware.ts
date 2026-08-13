@@ -12,10 +12,17 @@ const ROOT_DOMAIN = "easydriveks.com";
 export function middleware(req: NextRequest) {
   const host = (req.headers.get("host") || "").split(":")[0].toLowerCase();
 
-  // Kök / www / yerel / IP → dokunma.
+  // www → kök domaine kalıcı yönlendirme (kanonik adres).
+  if (host === `www.${ROOT_DOMAIN}`) {
+    return NextResponse.redirect(
+      `https://${ROOT_DOMAIN}${req.nextUrl.pathname}${req.nextUrl.search}`,
+      308,
+    );
+  }
+
+  // Kök / yerel / IP → dokunma.
   if (
     host === ROOT_DOMAIN ||
-    host === `www.${ROOT_DOMAIN}` ||
     host === "localhost" ||
     /^\d{1,3}(\.\d{1,3}){3}$/.test(host)
   ) {
