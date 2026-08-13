@@ -38,8 +38,9 @@ services:
     volumes:
       # Yüklenen logolar / araç fotoğrafları / imzalar — kalıcı.
       - uploads:/app/public/uploads
+    # Yalnızca localhost'a bağlan — dışarıya Caddy (443) üzerinden açılır, 3000 public değil.
     ports:
-      - "${APP_PORT:-3000}:3000"
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
 
   # Otomatik HTTPS (Let's Encrypt). Yalnızca "proxy" profili ile başlar:
   #   docker compose --profile proxy up -d
