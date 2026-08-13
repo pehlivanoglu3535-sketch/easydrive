@@ -1,0 +1,5 @@
+# RentFlow — otomatik HTTPS (Let's Encrypt). Domain .env'deki DOMAIN'den gelir.
+{$DOMAIN} {
+	encode gzip
+	reverse_proxy app:3000
+}

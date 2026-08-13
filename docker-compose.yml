@@ -41,6 +41,26 @@ services:
     ports:
       - "${APP_PORT:-3000}:3000"
 
+  # Otomatik HTTPS (Let's Encrypt). Yalnızca "proxy" profili ile başlar:
+  #   docker compose --profile proxy up -d
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    profiles: ["proxy"]
+    depends_on:
+      - app
+    environment:
+      DOMAIN: ${DOMAIN:?DOMAIN gerekli (ör. eaysdriveks.com)}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
 volumes:
   pgdata:
   uploads:
+  caddy_data:
+  caddy_config:
