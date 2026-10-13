@@ -99,6 +99,31 @@ export const services = [
       "İlk görüşmede hedeflerinizi dinliyor, size özel bir yol haritası çıkarıyoruz.",
     ].join("\n\n"),
   },
+  {
+    slug: "soy-bagi-ile-vatandaslik",
+    title: "Soy Bağı ile Vatandaşlık",
+    icon: "Scale",
+    order: 5,
+    summary: "Soy bağınızı kanıtlayarak vatandaşlık kazanma sürecinde uçtan uca rehberlik.",
+    features: [
+      "Soy bağı ve uygunluk değerlendirmesi",
+      "Nüfus ve arşiv kayıtlarının araştırılması",
+      "Belge toplama, tercüme ve noter işlemleri",
+      "Başvuru dosyasının hazırlanması",
+      "Başvuru takibi ve süreç yönetimi",
+    ].join("\n"),
+    description: [
+      "Atalarınızdan gelen soy bağınız yeni bir vatandaşlık için kapı açabilir. Hangi belgelerin gerektiğini, sürecin nasıl işlediğini ve uygunluk şartlarını sizin için baştan sona yönetiyoruz.",
+      "## Süreç nasıl işliyor?",
+      "Önce soy bağınızı ve uygunluğunuzu değerlendiriyoruz. Ardından gereken nüfus ve arşiv kayıtlarını araştırıp belgeleri eksiksiz topluyor, tercüme ve resmi işlemleri tamamlayıp başvuruyu yapıyoruz.",
+      "## Hizmet kapsamı",
+      "- Soy bağı ve uygunluk analizi",
+      "- Nüfus kayıtları ve arşiv araştırması",
+      "- Belge toplama, tercüme ve noter işlemleri",
+      "- Başvuru hazırlığı ve sonuca kadar takip",
+      "Durumunuzu değerlendirmek için ücretsiz ön görüşme talep edebilirsiniz.",
+    ].join("\n\n"),
+  },
 ];
 
 export const posts = [

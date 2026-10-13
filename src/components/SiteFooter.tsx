@@ -34,6 +34,7 @@ const services = [
   { href: "/hizmetler/oturum-calisma-izni", label: "Oturum & Çalışma İzni" },
   { href: "/hizmetler/muhasebe-vergi", label: "Muhasebe & Vergi" },
   { href: "/hizmetler/yatirim-is-danismanligi", label: "Yatırım & İş Danışmanlığı" },
+  { href: "/hizmetler/soy-bagi-ile-vatandaslik", label: "Soy Bağı ile Vatandaşlık" },
 ];
 
 export function SiteFooter() {
