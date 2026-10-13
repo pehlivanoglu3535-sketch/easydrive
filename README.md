@@ -76,3 +76,5 @@ Cloudflare Workers + D1 + özel domain adımları için **[DEPLOY.md](./DEPLOY.m
 - **Renk teması:** `src/app/globals.css` (`--brand*` / `--accent*`)
 - **Logo:** `public/logo.png` (header/footer), `src/app/icon.png` (favicon)
 - **Başlangıç içeriği:** `cloudflare/seed-data.mjs` → `npm run gen:seed`
+
+<!-- Canlı: https://kosovadayasam.com -->
