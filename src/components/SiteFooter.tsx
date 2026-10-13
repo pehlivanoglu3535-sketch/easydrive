@@ -21,10 +21,10 @@ function InstagramIcon() {
     </svg>
   );
 }
-function XIcon() {
+function FacebookIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden>
-      <path d="M18.9 2H22l-7.5 8.6L23.3 22h-6.9l-5.4-7-6.2 7H1.7l8-9.2L.9 2h7.1l4.9 6.5L18.9 2zm-2.4 18h1.9L7.6 4H5.6z" />
+    <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden>
+      <path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07c0 6.02 4.39 11.01 10.13 11.93v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.88v2.26h3.32l-.53 3.49h-2.79v8.44C19.61 23.08 24 18.09 24 12.07z" />
     </svg>
   );
 }
@@ -52,8 +52,8 @@ export function SiteFooter() {
             <a href={site.social.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className={socialIconClass}>
               <InstagramIcon />
             </a>
-            <a href={site.social.twitter} target="_blank" rel="noreferrer" aria-label="X" className={socialIconClass}>
-              <XIcon />
+            <a href={site.social.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className={socialIconClass}>
+              <FacebookIcon />
             </a>
           </div>
         </div>

@@ -21,7 +21,7 @@ export const site = {
   social: {
     linkedin: "https://www.linkedin.com/",
     instagram: "https://www.instagram.com/prishtinelibulent/",
-    twitter: "https://x.com/",
+    facebook: "https://www.facebook.com/muhasebecibulent/",
   },
   foundedYear: 2020,
   // Kurucu / baş danışman
