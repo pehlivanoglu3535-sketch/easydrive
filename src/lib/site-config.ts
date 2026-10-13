@@ -20,7 +20,7 @@ export const site = {
   // Sosyal
   social: {
     linkedin: "https://www.linkedin.com/",
-    instagram: "https://www.instagram.com/",
+    instagram: "https://www.instagram.com/prishtinelibulent/",
     twitter: "https://x.com/",
   },
   foundedYear: 2020,
