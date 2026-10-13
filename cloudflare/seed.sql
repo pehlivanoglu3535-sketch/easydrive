@@ -1,8 +1,11 @@
--- ProKosova Solutions — Cloudflare D1 başlangıç verisi
--- Tarihler epoch-ms (INTEGER). Tabloların boş olduğundan emin olun.
-
-INSERT INTO "User" ("id","email","passwordHash","name","role","createdAt") VALUES ('e3c063b9-2bf1-4ec4-ab74-97b5d3b5c608','admin@prokosovasolutions.com','pbkdf2$100000$bBar3StpjrF0mbPNag7mNQ==$8MmYfs7fCqJY1XHBTOgQT/GjkLtk5g2IuYcz8FdmIz0=','Site Yöneticisi','ADMIN',1791927516962);
-INSERT INTO "Service" ("id","slug","title","summary","description","icon","features","order","published","createdAt","updatedAt") VALUES ('710d8cc8-1e9c-40cc-a1bc-f97f7ce626e2','sirket-kurulusu','Kosova''da Şirket Kuruluşu','Yabancı girişimciler için Kosova''da hızlı, eksiksiz ve uçtan uca şirket kuruluşu.','Kosova, düşük vergi oranları ve hızlı kuruluş süreçleriyle yabancı girişimciler için Avrupa''nın en cazip merkezlerinden biri. Şirketinizi birkaç gün içinde, tüm resmi adımları sizin adınıza yöneterek kuruyoruz.
+DELETE FROM "Appointment";
+DELETE FROM "ContactMessage";
+DELETE FROM "TeamMember";
+DELETE FROM "Post";
+DELETE FROM "Service";
+DELETE FROM "User";
+INSERT INTO "User" ("id","email","passwordHash","name","role","createdAt") VALUES ('c3e1c8d4-07fc-43d3-a57e-31e0dcfb17ef','admin@prokosovasolutions.com','pbkdf2$100000$oUy468jRc3yiCyesYpOH7A==$g5xWT9FKbzHgfxtr73cUO4Ip/podq0hANdpfRYhk2og=','Site Yöneticisi','ADMIN',1791931177878);
+INSERT INTO "Service" ("id","slug","title","summary","description","icon","features","order","published","createdAt","updatedAt") VALUES ('9f8e7166-d849-4b19-85c2-8b5478fba62b','sirket-kurulusu','Kosova''da Şirket Kuruluşu','Yabancı girişimciler için Kosova''da hızlı, eksiksiz ve uçtan uca şirket kuruluşu.','Kosova, düşük vergi oranları ve hızlı kuruluş süreçleriyle yabancı girişimciler için Avrupa''nın en cazip merkezlerinden biri. Şirketinizi birkaç gün içinde, tüm resmi adımları sizin adınıza yöneterek kuruyoruz.
 
 ## Nasıl çalışıyoruz?
 
@@ -20,8 +23,8 @@ INSERT INTO "Service" ("id","slug","title","summary","description","icon","featu
 ARBK (ticaret sicili) tescili
 Fiskal numara ve KDV kaydı
 Banka hesabı açılışı desteği
-Resmi adres ve sözleşmeler',1,1,1791927516962,1791927516962);
-INSERT INTO "Service" ("id","slug","title","summary","description","icon","features","order","published","createdAt","updatedAt") VALUES ('3a4fa913-dd5d-4c86-928d-af46053cac94','oturum-calisma-izni','Oturum & Çalışma İzni','Kosova''da oturum ve çalışma izni başvurularında eksiksiz dosya ve uçtan uca takip.','Kosova''da yaşamak ve çalışmak için gereken oturum/çalışma izni süreçlerini sizin için baştan sona yönetiyoruz. Eksik belge veya yanlış başvuru kaynaklı gecikmelerin önüne geçiyoruz.
+Resmi adres ve sözleşmeler',1,1,1791931177878,1791931177878);
+INSERT INTO "Service" ("id","slug","title","summary","description","icon","features","order","published","createdAt","updatedAt") VALUES ('841c3170-daf2-46f6-a5ce-f2b78dc4a902','oturum-calisma-izni','Oturum & Çalışma İzni','Kosova''da oturum ve çalışma izni başvurularında eksiksiz dosya ve uçtan uca takip.','Kosova''da yaşamak ve çalışmak için gereken oturum/çalışma izni süreçlerini sizin için baştan sona yönetiyoruz. Eksik belge veya yanlış başvuru kaynaklı gecikmelerin önüne geçiyoruz.
 
 ## Kapsam
 
@@ -39,8 +42,8 @@ Randevularınızı planlıyor, kurumlarla iletişimi sizin adınıza yürütüyo
 Çalışma izni süreçleri
 Aile birleşimi
 Belge hazırlama ve tercüme/noter
-Başvuru takibi ve randevu yönetimi',2,1,1791927516962,1791927516962);
-INSERT INTO "Service" ("id","slug","title","summary","description","icon","features","order","published","createdAt","updatedAt") VALUES ('08d3fcfb-7ec1-4b24-b3b3-c7655a2c8a84','muhasebe-vergi','Muhasebe & Vergi','Kosova''da aylık muhasebe, beyannameler ve vergi danışmanlığında mevzuata tam uyum.','Şirketinizin Kosova''daki tüm muhasebe ve vergi yükümlülüklerini üstleniyoruz. Böylece siz işinize odaklanırken, bildirimlerinizin zamanında ve doğru yapıldığından emin olursunuz.
+Başvuru takibi ve randevu yönetimi',2,1,1791931177878,1791931177878);
+INSERT INTO "Service" ("id","slug","title","summary","description","icon","features","order","published","createdAt","updatedAt") VALUES ('37da0237-34e0-4ff9-ac96-7680df9c0212','muhasebe-vergi','Muhasebe & Vergi','Kosova''da aylık muhasebe, beyannameler ve vergi danışmanlığında mevzuata tam uyum.','Şirketinizin Kosova''daki tüm muhasebe ve vergi yükümlülüklerini üstleniyoruz. Böylece siz işinize odaklanırken, bildirimlerinizin zamanında ve doğru yapıldığından emin olursunuz.
 
 ## Hizmet kapsamı
 
@@ -58,8 +61,8 @@ Düzenli bilgilendirme ve şeffaf çalışma biçimiyle sürprizlerle karşıla�
 KDV ve vergi beyannameleri
 Bordro ve çalışan bildirimleri
 Finansal raporlama
-Vergi planlaması',3,1,1791927516962,1791927516962);
-INSERT INTO "Service" ("id","slug","title","summary","description","icon","features","order","published","createdAt","updatedAt") VALUES ('d06be61f-0956-4969-adc1-7c56d838a20e','yatirim-is-danismanligi','Yatırım & İş Danışmanlığı','Kosova pazarına giriş, yatırım ve büyüme stratejilerinde yerel uzmanlık.','Kosova''da yatırım yapmayı veya işinizi büyütmeyi mi planlıyorsunuz? Yerel pazara dair saha tecrübemizle, doğru kararları doğru zamanda almanıza yardımcı oluyoruz.
+Vergi planlaması',3,1,1791931177878,1791931177878);
+INSERT INTO "Service" ("id","slug","title","summary","description","icon","features","order","published","createdAt","updatedAt") VALUES ('c744e677-48c6-415a-b301-30088d18aefb','yatirim-is-danismanligi','Yatırım & İş Danışmanlığı','Kosova pazarına giriş, yatırım ve büyüme stratejilerinde yerel uzmanlık.','Kosova''da yatırım yapmayı veya işinizi büyütmeyi mi planlıyorsunuz? Yerel pazara dair saha tecrübemizle, doğru kararları doğru zamanda almanıza yardımcı oluyoruz.
 
 ## Neler sunuyoruz?
 
@@ -77,8 +80,8 @@ Pazar ve sektör analizinden fizibiliteye, yatırım teşviklerinden yerel ortak
 Sektör ve fizibilite analizi
 Yatırım teşvikleri ve fırsatlar
 Ortaklık ve yerel bağlantılar
-Büyüme ve operasyon danışmanlığı',4,1,1791927516962,1791927516962);
-INSERT INTO "Post" ("id","slug","title","excerpt","content","author","category","published","publishedAt","createdAt","updatedAt") VALUES ('650d40c3-81db-4d03-a76c-c9a9a402c134','kosovada-sirket-nasil-kurulur','Kosova''da Şirket Nasıl Kurulur? Adım Adım Rehber','Yabancı girişimciler için Kosova''da şirket kuruluşunun adımları, gereken belgeler ve süreler.','Kosova, hızlı kuruluş süreçleri ve düşük vergi oranlarıyla yabancı girişimciler için cazip bir merkez. Peki süreç nasıl işliyor?
+Büyüme ve operasyon danışmanlığı',4,1,1791931177878,1791931177878);
+INSERT INTO "Post" ("id","slug","title","excerpt","content","author","category","published","publishedAt","createdAt","updatedAt") VALUES ('f365097f-6b33-48ab-bcbf-a0816a468d4c','kosovada-sirket-nasil-kurulur','Kosova''da Şirket Nasıl Kurulur? Adım Adım Rehber','Yabancı girişimciler için Kosova''da şirket kuruluşunun adımları, gereken belgeler ve süreler.','Kosova, hızlı kuruluş süreçleri ve düşük vergi oranlarıyla yabancı girişimciler için cazip bir merkez. Peki süreç nasıl işliyor?
 
 ## 1. Şirket türünü ve ismi belirleyin
 
@@ -98,8 +101,8 @@ Faaliyetinize göre KDV mükellefiyeti ve gerekli vergi kayıtları tamamlanır.
 
 - Aylık muhasebe ve beyan süreçlerinin devreye alınması
 
-Tüm bu adımları, Kosova''da bulunmanıza gerek kalmadan vekaletle sizin adınıza yürütebiliriz. Detaylı bilgi için bizimle görüşün.','ProKosova Solutions','Şirket Kuruluşu',1,1791927516962,1791927516962,1791927516962);
-INSERT INTO "Post" ("id","slug","title","excerpt","content","author","category","published","publishedAt","createdAt","updatedAt") VALUES ('088291df-fd94-455f-8b90-fabe94b206d8','kosovada-oturum-izni-sartlar-surec','Kosova''da Oturum İzni: Şartlar ve Süreç','Kosova''da oturum izni türleri, başvuru şartları ve sürecin doğru yönetimi.','Kosova''da yaşamak isteyen yabancılar için oturum izni, sürecin doğru yönetildiğinde oldukça akıcı ilerleyen bir aşamadır.
+Tüm bu adımları, Kosova''da bulunmanıza gerek kalmadan vekaletle sizin adınıza yürütebiliriz. Detaylı bilgi için bizimle görüşün.','ProKosova Solutions','Şirket Kuruluşu',1,1791931177878,1791931177878,1791931177878);
+INSERT INTO "Post" ("id","slug","title","excerpt","content","author","category","published","publishedAt","createdAt","updatedAt") VALUES ('9f5b8731-856c-4baa-80b4-80b43cf8e76d','kosovada-oturum-izni-sartlar-surec','Kosova''da Oturum İzni: Şartlar ve Süreç','Kosova''da oturum izni türleri, başvuru şartları ve sürecin doğru yönetimi.','Kosova''da yaşamak isteyen yabancılar için oturum izni, sürecin doğru yönetildiğinde oldukça akıcı ilerleyen bir aşamadır.
 
 ## Oturum türleri
 
@@ -117,8 +120,8 @@ INSERT INTO "Post" ("id","slug","title","excerpt","content","author","category",
 
 Eksik belge ve geç yapılan yenilemeler en sık karşılaşılan gecikme sebepleridir. 820''den fazla başarılı başvuru tecrübemizle bu riskleri ortadan kaldırıyoruz.
 
-Oturum süreciniz için ücretsiz ön görüşme talep edebilirsiniz.','ProKosova Solutions','Oturum',1,1791927516962,1791927516962,1791927516962);
-INSERT INTO "Post" ("id","slug","title","excerpt","content","author","category","published","publishedAt","createdAt","updatedAt") VALUES ('13340ece-7d4e-46a7-9b56-ae7dfda9e33f','kosovada-vergi-sistemi-avantajlari','Kosova''da Vergi Sistemi ve Avantajları','Kosova''nın rekabetçi vergi oranları ve işletmelere sunduğu avantajlara genel bir bakış.','Kosova, bölgedeki en rekabetçi vergi sistemlerinden birine sahip. Bu da onu yabancı yatırımcılar için cazip kılan en önemli etkenlerden biri.
+Oturum süreciniz için ücretsiz ön görüşme talep edebilirsiniz.','ProKosova Solutions','Oturum',1,1791931177878,1791931177878,1791931177878);
+INSERT INTO "Post" ("id","slug","title","excerpt","content","author","category","published","publishedAt","createdAt","updatedAt") VALUES ('19ad6a64-faaa-47ba-845d-e2f29d54c18f','kosovada-vergi-sistemi-avantajlari','Kosova''da Vergi Sistemi ve Avantajları','Kosova''nın rekabetçi vergi oranları ve işletmelere sunduğu avantajlara genel bir bakış.','Kosova, bölgedeki en rekabetçi vergi sistemlerinden birine sahip. Bu da onu yabancı yatırımcılar için cazip kılan en önemli etkenlerden biri.
 
 ## Öne çıkan başlıklar
 
@@ -132,8 +135,8 @@ Kurumlar vergisi, gelir vergisi ve KDV oranları birçok Avrupa ülkesine kıyas
 
 - Giderlerin doğru belgelenmesi
 
-Muhasebe ekibimiz, işletmenize özel vergi planlamasını hazırlayarak yükümlülüklerinizi yasal sınırlar içinde optimize eder.','ProKosova Solutions','Vergi',1,1791927516962,1791927516962,1791927516962);
-INSERT INTO "Post" ("id","slug","title","excerpt","content","author","category","published","publishedAt","createdAt","updatedAt") VALUES ('26e1e4d0-db63-42b3-a0b9-9af38b2e81ea','neden-kosovada-yatirim','Neden Kosova''da Yatırım? Yabancı Girişimciler İçin Fırsatlar','Genç nüfus, düşük maliyetler ve stratejik konum: Kosova''yı yatırım için cazip kılan nedenler.','Kosova, son yıllarda yabancı girişimcilerin radarına giren, potansiyeli yüksek bir pazar. Peki bu ilgiyi haklı çıkaran nedenler neler?
+Muhasebe ekibimiz, işletmenize özel vergi planlamasını hazırlayarak yükümlülüklerinizi yasal sınırlar içinde optimize eder.','ProKosova Solutions','Vergi',1,1791931177878,1791931177878,1791931177878);
+INSERT INTO "Post" ("id","slug","title","excerpt","content","author","category","published","publishedAt","createdAt","updatedAt") VALUES ('64e04cb9-a51f-4c9b-9b6e-e137be0ddefd','neden-kosovada-yatirim','Neden Kosova''da Yatırım? Yabancı Girişimciler İçin Fırsatlar','Genç nüfus, düşük maliyetler ve stratejik konum: Kosova''yı yatırım için cazip kılan nedenler.','Kosova, son yıllarda yabancı girişimcilerin radarına giren, potansiyeli yüksek bir pazar. Peki bu ilgiyi haklı çıkaran nedenler neler?
 
 ## Genç ve dinamik nüfus
 
@@ -149,5 +152,5 @@ Avrupa''nın en genç nüfuslarından birine sahip olan Kosova, nitelikli ve uyg
 
 - Büyüyen hizmet ve teknoloji sektörleri
 
-Doğru rehberlikle Kosova''da yatırım, hızlı ve güvenli biçimde hayata geçirilebilir. Fırsatları değerlendirmek için bizimle görüşün.','ProKosova Solutions','Yatırım',1,1791927516962,1791927516962,1791927516962);
-INSERT INTO "TeamMember" ("id","name","title","bio","order","email","createdAt") VALUES ('bb258f24-2e54-4364-8919-88e02255fa99','Bülent BOZKURT','Kurucu & Baş Danışman','6 yılı aşkın süredir Kosova''da yabancı girişimci ve yatırımcılara danışmanlık veriyor; 600+ şirket kuruluşu ve 820+ oturum başvurusuna liderlik etti.',1,'bulent@prokosovasolutions.com',1791927516962);
+Doğru rehberlikle Kosova''da yatırım, hızlı ve güvenli biçimde hayata geçirilebilir. Fırsatları değerlendirmek için bizimle görüşün.','ProKosova Solutions','Yatırım',1,1791931177878,1791931177878,1791931177878);
+INSERT INTO "TeamMember" ("id","name","title","bio","order","email","createdAt") VALUES ('85fe75ea-8c71-47d7-9e81-f70c9d39dd0f','Bülent BOZKURT','Kurucu & Baş Danışman','6 yılı aşkın süredir Kosova''da yabancı girişimci ve yatırımcılara danışmanlık veriyor; 600+ şirket kuruluşu ve 820+ oturum başvurusuna liderlik etti.',1,'bulent@prokosovasolutions.com',1791931177878);

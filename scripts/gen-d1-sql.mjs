@@ -20,8 +20,13 @@ const q = (v) => `'${String(v).replace(/'/g, "''")}'`;
 const now = Date.now(); // D1 tarih kolonları epoch-ms (INTEGER) saklar (Drizzle timestamp_ms)
 
 const lines = [];
-lines.push("-- ProKosova Solutions — Cloudflare D1 başlangıç verisi");
-lines.push("-- Tarihler epoch-ms (INTEGER). Tabloların boş olduğundan emin olun.\n");
+// Önce mevcut veriyi temizle (yeniden çalıştırılabilir olsun; FK için önce çocuk tablolar)
+lines.push(`DELETE FROM "Appointment";`);
+lines.push(`DELETE FROM "ContactMessage";`);
+lines.push(`DELETE FROM "TeamMember";`);
+lines.push(`DELETE FROM "Post";`);
+lines.push(`DELETE FROM "Service";`);
+lines.push(`DELETE FROM "User";`);
 
 // Admin
 const adminHash = await hashPassword(ADMIN_PASSWORD);

@@ -1,5 +1,4 @@
--- CreateTable
-CREATE TABLE "User" (
+CREATE TABLE IF NOT EXISTS "User" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
@@ -7,9 +6,7 @@ CREATE TABLE "User" (
     "role" TEXT NOT NULL DEFAULT 'ADMIN',
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
--- CreateTable
-CREATE TABLE "Service" (
+CREATE TABLE IF NOT EXISTS "Service" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "slug" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -22,9 +19,7 @@ CREATE TABLE "Service" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );
-
--- CreateTable
-CREATE TABLE "Post" (
+CREATE TABLE IF NOT EXISTS "Post" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "slug" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -38,9 +33,7 @@ CREATE TABLE "Post" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );
-
--- CreateTable
-CREATE TABLE "TeamMember" (
+CREATE TABLE IF NOT EXISTS "TeamMember" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -51,9 +44,7 @@ CREATE TABLE "TeamMember" (
     "order" INTEGER NOT NULL DEFAULT 0,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
--- CreateTable
-CREATE TABLE "ContactMessage" (
+CREATE TABLE IF NOT EXISTS "ContactMessage" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -67,9 +58,7 @@ CREATE TABLE "ContactMessage" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "ContactMessage_serviceId_fkey" FOREIGN KEY ("serviceId") REFERENCES "Service" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
-
--- CreateTable
-CREATE TABLE "Appointment" (
+CREATE TABLE IF NOT EXISTS "Appointment" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -81,21 +70,9 @@ CREATE TABLE "Appointment" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Appointment_serviceId_fkey" FOREIGN KEY ("serviceId") REFERENCES "Service" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Service_slug_key" ON "Service"("slug");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Post_slug_key" ON "Post"("slug");
-
--- CreateIndex
-CREATE INDEX "ContactMessage_status_idx" ON "ContactMessage"("status");
-
--- CreateIndex
-CREATE INDEX "Appointment_slot_idx" ON "Appointment"("slot");
-
--- CreateIndex
-CREATE INDEX "Appointment_status_idx" ON "Appointment"("status");
+CREATE UNIQUE INDEX IF NOT EXISTS "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX IF NOT EXISTS "Service_slug_key" ON "Service"("slug");
+CREATE UNIQUE INDEX IF NOT EXISTS "Post_slug_key" ON "Post"("slug");
+CREATE INDEX IF NOT EXISTS "ContactMessage_status_idx" ON "ContactMessage"("status");
+CREATE INDEX IF NOT EXISTS "Appointment_slot_idx" ON "Appointment"("slot");
+CREATE INDEX IF NOT EXISTS "Appointment_status_idx" ON "Appointment"("status");
