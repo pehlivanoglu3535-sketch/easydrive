@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { Pencil, Eye, EyeOff, ExternalLink } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { ServiceIcon } from "@/components/ServiceIcon";
 import { toggleServicePublishedAction } from "@/lib/actions/admin";
 
 export default async function ServicesAdminPage() {
-  const services = await prisma.service.findMany({ orderBy: { order: "asc" } });
+  const services = await getDb().query.service.findMany({ orderBy: (s, { asc }) => asc(s.order) });
 
   return (
     <div className="space-y-6">

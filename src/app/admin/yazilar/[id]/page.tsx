@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Save, Trash2, AlertCircle } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { savePostAction, deletePostAction } from "@/lib/actions/admin";
 
 export default async function PostEditorPage({ params, searchParams }: PageProps<"/admin/yazilar/[id]">) {
@@ -9,7 +9,7 @@ export default async function PostEditorPage({ params, searchParams }: PageProps
   const sp = await searchParams;
   const isNew = id === "yeni";
 
-  const post = isNew ? null : await prisma.post.findUnique({ where: { id } });
+  const post = isNew ? null : await getDb().query.post.findFirst({ where: (p, { eq }) => eq(p.id, id) });
   if (!isNew && !post) notFound();
 
   return (

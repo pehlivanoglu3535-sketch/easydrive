@@ -7,38 +7,38 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "tsx prisma/seed.ts"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "gen:seed": "node --env-file=.env scripts/gen-d1-sql.mjs",
+    "d1:schema:local": "wrangler d1 execute prokosova-db --local --file=cloudflare/schema.sql",
+    "d1:seed:local": "wrangler d1 execute prokosova-db --local --file=cloudflare/seed.sql",
+    "d1:schema": "wrangler d1 execute prokosova-db --remote --file=cloudflare/schema.sql",
+    "d1:seed": "wrangler d1 execute prokosova-db --remote --file=cloudflare/seed.sql"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.3",
-    "bcryptjs": "^3.0.3",
+    "drizzle-orm": "^0.45.4",
     "jose": "^6.2.8",
     "lucide-react": "^1.31.0",
     "next": "16.3.0",
-    "prisma": "^6.19.3",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.2",
     "@tailwindcss/postcss": "^4",
-    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
     "tailwindcss": "^4",
-    "tsx": "^4.23.12",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.150.0"
   },
   "allowScripts": {
     "esbuild@0.28.2": true,
-    "unrs-resolver@1.12.2": true,
-    "prisma@6.19.3": true,
-    "@prisma/engines@6.19.3": true,
-    "@prisma/client@6.19.3": true
+    "unrs-resolver@1.12.2": true
   }
 }

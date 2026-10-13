@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CalendarCheck, Clock, Video, ShieldCheck } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { getAvailableSlots } from "@/lib/appointments";
 import { AppointmentForm } from "@/components/AppointmentForm";
 import { site } from "@/lib/site-config";
@@ -22,7 +22,7 @@ export default async function AppointmentPage({ searchParams }: PageProps<"/rand
 
   const [days, services] = await Promise.all([
     getAvailableSlots(),
-    prisma.service.findMany({ where: { published: true }, orderBy: { order: "asc" }, select: { slug: true, title: true } }),
+    getDb().query.service.findMany({ where: (s, { eq }) => eq(s.published, true), orderBy: (s, { asc }) => asc(s.order), columns: { slug: true, title: true } }),
   ]);
 
   return (

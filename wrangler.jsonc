@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "prokosova-solutions",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-05-05",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // Cloudflare D1 (SQLite) — veri Cloudflare'de saklanır.
+  // database_id'yi kendi D1 veritabanınızın ID'siyle değiştirin (wrangler d1 create ... çıktısı).
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "prokosova-db",
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ]
+}

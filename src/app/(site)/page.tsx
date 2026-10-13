@@ -3,7 +3,7 @@ import {
   ArrowRight, Check, CheckCircle2, Quote, Target, Lightbulb,
   TrendingUp, ShieldCheck, Users, ChevronRight,
 } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { ServiceIcon } from "@/components/ServiceIcon";
 import { site } from "@/lib/site-config";
 import { formatDate } from "@/lib/utils";
@@ -37,9 +37,10 @@ const TESTIMONIALS = [
 ];
 
 export default async function HomePage() {
+  const db = getDb();
   const [services, posts] = await Promise.all([
-    prisma.service.findMany({ where: { published: true }, orderBy: { order: "asc" }, take: 4 }),
-    prisma.post.findMany({ where: { published: true }, orderBy: { publishedAt: "desc" }, take: 3 }),
+    db.query.service.findMany({ where: (s, { eq }) => eq(s.published, true), orderBy: (s, { asc }) => asc(s.order), limit: 4 }),
+    db.query.post.findMany({ where: (p, { eq }) => eq(p.published, true), orderBy: (p, { desc }) => desc(p.publishedAt), limit: 3 }),
   ]);
 
   return (

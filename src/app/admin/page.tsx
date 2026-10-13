@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { MessageSquare, Calendar, Newspaper, Briefcase, ArrowRight } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { eq, count } from "drizzle-orm";
+import { getDb } from "@/lib/db";
+import { contactMessage, appointment, post, service } from "@/lib/schema";
 import { getSession } from "@/lib/auth";
 import { formatDateTime, formatRelativeShort } from "@/lib/utils";
 
@@ -8,18 +10,23 @@ export default async function AdminDashboard() {
   const session = await getSession();
   const now = new Date();
 
-  const [newMessages, pendingAppts, postCount, serviceCount, recentMessages, upcoming] = await Promise.all([
-    prisma.contactMessage.count({ where: { status: "NEW" } }),
-    prisma.appointment.count({ where: { status: "PENDING" } }),
-    prisma.post.count(),
-    prisma.service.count(),
-    prisma.contactMessage.findMany({ orderBy: { createdAt: "desc" }, take: 5, include: { service: true } }),
-    prisma.appointment.findMany({
-      where: { slot: { gte: now }, status: { in: ["PENDING", "CONFIRMED"] } },
-      orderBy: { slot: "asc" },
-      take: 5,
+  const db = getDb();
+  const [[nm], [pa], [pc], [sc], recentMessages, upcoming] = await Promise.all([
+    db.select({ c: count() }).from(contactMessage).where(eq(contactMessage.status, "NEW")),
+    db.select({ c: count() }).from(appointment).where(eq(appointment.status, "PENDING")),
+    db.select({ c: count() }).from(post),
+    db.select({ c: count() }).from(service),
+    db.query.contactMessage.findMany({ orderBy: (m, { desc }) => desc(m.createdAt), limit: 5, with: { service: true } }),
+    db.query.appointment.findMany({
+      where: (a, { and, gte, inArray }) => and(gte(a.slot, now), inArray(a.status, ["PENDING", "CONFIRMED"])),
+      orderBy: (a, { asc }) => asc(a.slot),
+      limit: 5,
     }),
   ]);
+  const newMessages = nm?.c ?? 0;
+  const pendingAppts = pa?.c ?? 0;
+  const postCount = pc?.c ?? 0;
+  const serviceCount = sc?.c ?? 0;
 
   const stats = [
     { label: "Yeni mesaj", value: newMessages, icon: MessageSquare, href: "/admin/mesajlar" },

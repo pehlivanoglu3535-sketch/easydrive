@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Mail, Phone, MapPin, Clock, MessageCircle } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { site } from "@/lib/site-config";
 import { ContactForm } from "@/components/ContactForm";
 
@@ -14,10 +14,10 @@ export default async function ContactPage({ searchParams }: PageProps<"/iletisim
   const kind = sp?.tur === "teklif" ? "quote" : "contact";
   const defaultService = typeof sp?.hizmet === "string" ? sp.hizmet : "";
 
-  const services = await prisma.service.findMany({
-    where: { published: true },
-    orderBy: { order: "asc" },
-    select: { slug: true, title: true },
+  const services = await getDb().query.service.findMany({
+    where: (s, { eq }) => eq(s.published, true),
+    orderBy: (s, { asc }) => asc(s.order),
+    columns: { slug: true, title: true },
   });
 
   const waNumber = site.whatsapp.replace(/[^0-9]/g, "");

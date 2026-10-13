@@ -1,8 +1,8 @@
 import { Mail, Phone, Trash2, Check, X, CheckCheck } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { formatDateTime, APPOINTMENT_STATUS_TR } from "@/lib/utils";
 import { setAppointmentStatusAction, deleteAppointmentAction } from "@/lib/actions/admin";
-import type { AppointmentStatus } from "@prisma/client";
+import type { AppointmentStatus } from "@/lib/schema";
 
 const badgeClass: Record<string, string> = {
   PENDING: "bg-amber-50 text-amber-700 ring-amber-200",
@@ -16,9 +16,9 @@ type Appt = Awaited<ReturnType<typeof getData>>["upcoming"][number];
 async function getData() {
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
-  const all = await prisma.appointment.findMany({
-    orderBy: { slot: "asc" },
-    include: { service: true },
+  const all = await getDb().query.appointment.findMany({
+    orderBy: (a, { asc }) => asc(a.slot),
+    with: { service: true },
   });
   const upcoming = all.filter((a) => a.slot >= startOfToday && a.status !== "CANCELLED" && a.status !== "COMPLETED");
   const past = all

@@ -1,4 +1,6 @@
-import { prisma } from "@/lib/db";
+import { and, gte, lte, inArray } from "drizzle-orm";
+import { getDb } from "@/lib/db";
+import { appointment } from "@/lib/schema";
 import { APPOINTMENT_HOURS, APPOINTMENT_WINDOW_DAYS } from "@/lib/site-config";
 
 export type SlotDay = {
@@ -21,13 +23,16 @@ export async function getAvailableSlots(): Promise<SlotDay[]> {
   const end = new Date(start);
   end.setDate(end.getDate() + APPOINTMENT_WINDOW_DAYS);
 
-  const booked = await prisma.appointment.findMany({
-    where: {
-      slot: { gte: start, lte: end },
-      status: { in: ["PENDING", "CONFIRMED"] },
-    },
-    select: { slot: true },
-  });
+  const booked = await getDb()
+    .select({ slot: appointment.slot })
+    .from(appointment)
+    .where(
+      and(
+        gte(appointment.slot, start),
+        lte(appointment.slot, end),
+        inArray(appointment.status, ["PENDING", "CONFIRMED"])
+      )
+    );
   const bookedSet = new Set(booked.map((b) => b.slot.getTime()));
 
   const days: SlotDay[] = [];

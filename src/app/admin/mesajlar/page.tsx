@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Mail, Phone, Building2, Trash2 } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { formatDateTime, MESSAGE_STATUS_TR } from "@/lib/utils";
 import { setMessageStatusAction, deleteMessageAction } from "@/lib/actions/admin";
-import type { MessageStatus } from "@prisma/client";
+import type { MessageStatus } from "@/lib/schema";
 
 const FILTERS: { key: string; label: string }[] = [
   { key: "all", label: "Tümü" },
@@ -23,12 +23,12 @@ const badgeClass: Record<string, string> = {
 export default async function MessagesPage({ searchParams }: PageProps<"/admin/mesajlar">) {
   const sp = await searchParams;
   const filter = typeof sp?.durum === "string" ? sp.durum : "all";
-  const where = FILTERS.some((f) => f.key === filter) && filter !== "all" ? { status: filter as MessageStatus } : {};
+  const valid = FILTERS.some((f) => f.key === filter) && filter !== "all";
 
-  const messages = await prisma.contactMessage.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    include: { service: true },
+  const messages = await getDb().query.contactMessage.findMany({
+    where: valid ? (m, { eq }) => eq(m.status, filter as MessageStatus) : undefined,
+    orderBy: (m, { desc }) => desc(m.createdAt),
+    with: { service: true },
   });
 
   return (

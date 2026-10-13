@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ChevronRight } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { ServiceIcon } from "@/components/ServiceIcon";
 
 export const dynamic = "force-dynamic";
@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 };
 
 export default async function ServicesPage() {
-  const services = await prisma.service.findMany({
-    where: { published: true },
-    orderBy: { order: "asc" },
+  const services = await getDb().query.service.findMany({
+    where: (s, { eq }) => eq(s.published, true),
+    orderBy: (s, { asc }) => asc(s.order),
   });
 
   return (

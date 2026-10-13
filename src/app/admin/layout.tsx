@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { eq, count } from "drizzle-orm";
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
+import { contactMessage, appointment } from "@/lib/schema";
 import { AdminNav } from "@/components/admin/AdminNav";
 
 export const metadata: Metadata = {
@@ -11,10 +13,13 @@ export const metadata: Metadata = {
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   await requireAdmin();
 
-  const [messages, appointments] = await Promise.all([
-    prisma.contactMessage.count({ where: { status: "NEW" } }),
-    prisma.appointment.count({ where: { status: "PENDING" } }),
+  const db = getDb();
+  const [[m], [a]] = await Promise.all([
+    db.select({ c: count() }).from(contactMessage).where(eq(contactMessage.status, "NEW")),
+    db.select({ c: count() }).from(appointment).where(eq(appointment.status, "PENDING")),
   ]);
+  const messages = m?.c ?? 0;
+  const appointments = a?.c ?? 0;
 
   return (
     <div className="min-h-screen bg-slate-50 lg:grid lg:grid-cols-[260px_1fr]">

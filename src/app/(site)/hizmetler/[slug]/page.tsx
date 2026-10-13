@@ -2,28 +2,31 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, CalendarCheck } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { ServiceIcon } from "@/components/ServiceIcon";
 import { RichText } from "@/components/RichText";
 import { toLines } from "@/lib/utils";
 
 export async function generateMetadata({ params }: PageProps<"/hizmetler/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const service = await prisma.service.findUnique({ where: { slug } });
+  const service = await getDb().query.service.findFirst({ where: (s, { eq }) => eq(s.slug, slug) });
   if (!service) return { title: "Hizmet bulunamadı" };
   return { title: service.title, description: service.summary };
 }
 
 export default async function ServiceDetailPage({ params }: PageProps<"/hizmetler/[slug]">) {
   const { slug } = await params;
-  const service = await prisma.service.findFirst({ where: { slug, published: true } });
+  const db = getDb();
+  const service = await db.query.service.findFirst({
+    where: (s, { and, eq }) => and(eq(s.slug, slug), eq(s.published, true)),
+  });
   if (!service) notFound();
 
   const features = toLines(service.features);
-  const others = await prisma.service.findMany({
-    where: { published: true, NOT: { id: service.id } },
-    orderBy: { order: "asc" },
-    take: 3,
+  const others = await db.query.service.findMany({
+    where: (s, { and, eq, ne }) => and(eq(s.published, true), ne(s.id, service.id)),
+    orderBy: (s, { asc }) => asc(s.order),
+    limit: 3,
   });
 
   return (

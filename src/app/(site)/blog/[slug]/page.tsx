@@ -2,26 +2,29 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Calendar, User } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { RichText } from "@/components/RichText";
 import { formatDate } from "@/lib/utils";
 
 export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const post = await prisma.post.findUnique({ where: { slug } });
+  const post = await getDb().query.post.findFirst({ where: (p, { eq }) => eq(p.slug, slug) });
   if (!post) return { title: "Yazı bulunamadı" };
   return { title: post.title, description: post.excerpt };
 }
 
 export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
   const { slug } = await params;
-  const post = await prisma.post.findFirst({ where: { slug, published: true } });
+  const db = getDb();
+  const post = await db.query.post.findFirst({
+    where: (p, { and, eq }) => and(eq(p.slug, slug), eq(p.published, true)),
+  });
   if (!post) notFound();
 
-  const more = await prisma.post.findMany({
-    where: { published: true, NOT: { id: post.id } },
-    orderBy: { publishedAt: "desc" },
-    take: 2,
+  const more = await db.query.post.findMany({
+    where: (p, { and, eq, ne }) => and(eq(p.published, true), ne(p.id, post.id)),
+    orderBy: (p, { desc }) => desc(p.publishedAt),
+    limit: 2,
   });
 
   return (

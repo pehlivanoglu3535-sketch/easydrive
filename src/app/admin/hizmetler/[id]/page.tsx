@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Save, AlertCircle } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { saveServiceAction } from "@/lib/actions/admin";
 
 const ICONS = ["Briefcase", "Calculator", "Plane", "Code2", "TrendingUp", "Scale", "Users", "LineChart", "ShieldCheck", "Globe", "Building2", "Lightbulb", "Target", "FileText"];
@@ -9,7 +9,7 @@ const ICONS = ["Briefcase", "Calculator", "Plane", "Code2", "TrendingUp", "Scale
 export default async function ServiceEditorPage({ params, searchParams }: PageProps<"/admin/hizmetler/[id]">) {
   const { id } = await params;
   const sp = await searchParams;
-  const service = await prisma.service.findUnique({ where: { id } });
+  const service = await getDb().query.service.findFirst({ where: (s, { eq }) => eq(s.id, id) });
   if (!service) notFound();
 
   return (

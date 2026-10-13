@@ -2,8 +2,10 @@ import "server-only";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SignJWT, jwtVerify } from "jose";
-import bcrypt from "bcryptjs";
-import type { Role } from "@prisma/client";
+import { hashPassword, verifyPassword } from "./password.mjs";
+import type { Role } from "@/lib/schema";
+
+export { hashPassword, verifyPassword };
 
 const COOKIE_NAME = "prokosova_session";
 
@@ -32,14 +34,6 @@ export type SessionPayload = {
   name: string;
   email: string;
 };
-
-export async function hashPassword(password: string) {
-  return bcrypt.hash(password, 10);
-}
-
-export async function verifyPassword(password: string, hash: string) {
-  return bcrypt.compare(password, hash);
-}
 
 export async function createSession(payload: SessionPayload) {
   const token = await new SignJWT(payload)

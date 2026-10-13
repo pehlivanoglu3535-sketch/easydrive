@@ -1,178 +1,92 @@
-# ProKosova Solutions — Production'a Alma Rehberi
+# ProKosova Solutions — Cloudflare'e Canlıya Alma
 
-Kurumsal danışmanlık web sitesi (tanıtım + yönetim paneli). Next.js 16 + Prisma + PostgreSQL,
-tek `docker compose` ile.
+Site tamamen Cloudflare üzerinde çalışır: **uygulama → Cloudflare Workers**,
+**veritabanı → Cloudflare D1**, **domain/SSL → Cloudflare**. Ücretsiz katman bu site için yeterlidir.
 
-Bu kurulum **host-bağımsız**: yönetilen bir platformda (Railway/Render), düz bir VPS'te,
-Coolify'da veya Dokku'da aynı şekilde çalışır. Uygulama ve veritabanı (iletişim mesajları,
-randevular, blog yazıları, hizmetler) kalıcıdır.
+Aşağıdaki adımlar bir terminalde (bu repo klonlanmış halde) çalıştırılır.
 
 ---
 
-## Önerilen: Railway (yönetilen platform) + Cloudflare DNS
-
-En az uğraşla canlıya alma yolu. Railway bu repodaki `Dockerfile`'ı otomatik derler;
-açılışta entrypoint şemayı kurar, yöneticiyi ve içeriği yükler.
-
-**1) Veritabanı**
-- Railway → New Project → **Add PostgreSQL**. Railway bir `DATABASE_URL` üretir.
-
-**2) Uygulama servisi**
-- Aynı projede → **Deploy from GitHub repo** → `pehlivanoglu3535-sketch/easydrive` (ilgili dal).
-- Railway `Dockerfile`'ı otomatik algılar ve derler.
-- Servisin **Variables** bölümüne şunları ekleyin:
-  - `DATABASE_URL` = Postgres servisine referans (Railway: `${{Postgres.DATABASE_URL}}`)
-  - `AUTH_SECRET` = güçlü rastgele değer (`openssl rand -base64 48`)
-  - `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME` = ilk yönetici
-  - `NODE_ENV` = `production`
-  - `DOMAIN` = `kosovadayasam.com`
-- Deploy edin. Entrypoint `prisma db push` + `create-admin` + `seed-content` çalıştırır.
-
-**3) Özel domain (Cloudflare)**
-- Railway → servis → **Settings → Networking → Custom Domain** → `kosovadayasam.com` ekleyin.
-  Railway size bir **CNAME hedefi** verir.
-- Cloudflare → `kosovadayasam.com` DNS:
-  - `CNAME  @ (veya www)  →  <railway-hedefi>`
-  - İlk doğrulama için **DNS only (gri bulut)** bırakın; Railway sertifikayı alsın.
-  - Çalıştıktan sonra isterseniz turuncu bulut (proxy) + SSL **Full (strict)** açabilirsiniz.
-- Kök domain için CNAME flattening Cloudflare'de otomatik çalışır.
-
-> Railway `PORT` değişkenini otomatik verir; `next start` bunu kullanır (ek ayar gerekmez).
-
----
-
-## Alternatif: VPS + Docker
-
-Sunucuda Docker + Docker Compose kurulu olmalı.
+## 1. Cloudflare girişi
 
 ```bash
-# 1) Projeyi sunucuya alın (git clone veya scp)
-cd easydrive
-
-# 2) Ortam dosyasını hazırlayın
-cp .env.production.example .env
-#    .env içini doldurun:
-#    - POSTGRES_PASSWORD : güçlü bir şifre
-#    - AUTH_SECRET       : openssl rand -base64 48
-#    - ADMIN_EMAIL / ADMIN_PASSWORD : ilk yönetici girişi için
-
-# 3) Ayağa kaldırın (imajı derler, DB'yi kurar, şemayı uygular, admini + içeriği oluşturur)
-docker compose up -d --build
-
-# 4) Logları izleyin
-docker compose logs -f app
+npx wrangler login
 ```
+Tarayıcı açılır; Cloudflare hesabınızla yetki verin.
 
-Uygulama `http://SUNUCU_IP:3000` adresinde açılır. `/login` → yönetici bilgilerinizle girin → `/admin`.
-
-### İlk açılışta ne olur?
-- `db` servisi (Postgres 16) kalıcı `pgdata` volume'u ile başlar.
-- `app` entrypoint'i şemayı `prisma db push` ile Postgres'e uygular (tabloları oluşturur).
-- `ADMIN_EMAIL/PASSWORD` verilmişse yönetici oluşturulur (idempotent; varsa dokunmaz).
-- Başlangıç içeriği (4 hizmet, 4 blog yazısı, ekip) **yalnızca ilgili tablolar boşsa** eklenir —
-  böylece panelden yaptığınız düzenlemeler yeniden deploy'da ezilmez.
-
-> Güvenlik: Yönetici oluşturulduktan sonra `.env` içindeki `ADMIN_PASSWORD` satırını
-> boşaltıp `docker compose up -d` ile yeniden başlatabilirsiniz.
-
----
-
-## HTTPS (production'da zorunlu)
-
-Cookie'ler `NODE_ENV=production` altında `secure` olduğundan, uygulama **HTTPS arkasında** çalışmalı.
-
-### Seçenek A — Dahil edilen Caddy (en kolay, otomatik Let's Encrypt)
-
-`.env` içine `DOMAIN=alanadiniz.com` yazın, DNS A kaydını sunucu IP'sine yönlendirin ve:
+## 2. D1 veritabanı oluştur
 
 ```bash
-docker compose --profile proxy up -d
+npx wrangler d1 create prokosova-db
 ```
+Çıktıdaki **`database_id`** değerini kopyalayın ve `wrangler.jsonc` içindeki
+`d1_databases[0].database_id` alanına yapıştırın (placeholder `00000000-...` yerine).
 
-Caddy 80/443'ü dinler, sertifikayı otomatik alır ve `app:3000`'e vekil yapar.
-`www` otomatik olarak köke yönlendirilir (bkz. `Caddyfile`).
-
-### Seçenek B — Mevcut reverse proxy (Nginx / Traefik / Coolify / Dokku)
-
-Caddy profilini başlatmayın; TLS'i proxy'niz yönetsin ve `127.0.0.1:3000`'e `proxy_pass` yapın.
-Örnek Nginx:
-
-```nginx
-server {
-  server_name alanadiniz.com;
-  location / { proxy_pass http://127.0.0.1:3000; proxy_set_header Host $host; }
-}
-```
-
----
-
-## Coolify / Dokku ile
-
-- **Coolify**: "Docker Compose" kaynağı olarak bu repo'yu ekleyin; `.env` değişkenlerini panelde girin.
-  `pgdata` volume'u kalıcı kalır; TLS otomatik.
-- **Dokku**: `Dockerfile` tabanlı deploy + `dokku postgres` eklentisi (`DATABASE_URL`'i verir).
-
-Harici (yönetilen) Postgres kullanacaksanız compose'taki `db` servisini kaldırıp
-`DATABASE_URL`'i doğrudan verin.
-
----
-
-## Yedekleme
+## 3. Şema + başlangıç verisini uzak D1'e uygula
 
 ```bash
-# Veritabanı yedeği
-docker compose exec db pg_dump -U meridyen meridyen > yedek-$(date +%F).sql
+# (gerekirse önce kendi admin bilginizle seed üretin)
+#   ADMIN_EMAIL=... ADMIN_PASSWORD=... npm run gen:seed
+
+npm run d1:schema      # cloudflare/schema.sql → uzak D1
+npm run d1:seed        # cloudflare/seed.sql   → uzak D1 (admin + içerik)
 ```
 
-Geri yükleme: `pg_dump` çıktısını `psql` ile açın.
+## 4. Oturum anahtarını (secret) ayarla
+
+```bash
+npx wrangler secret put AUTH_SECRET
+```
+İstendiğinde güçlü bir değer yapıştırın (`openssl rand -base64 48` ile üretebilirsiniz).
+
+## 5. Deploy
+
+```bash
+npm run cf:deploy
+```
+Bu komut uygulamayı build edip Workers'a yükler. Çıktıda `*.workers.dev` adresi verilir;
+oradan siteyi test edebilirsiniz.
+
+## 6. Özel domain: `kosovadayasam.com`
+
+Domain zaten Cloudflare'de olduğu için birkaç tık:
+
+1. Cloudflare Dashboard → **Workers & Pages** → `prokosova-solutions` worker'ı.
+2. **Settings → Domains & Routes → Add → Custom Domain** → `kosovadayasam.com` ekleyin.
+   (İsterseniz `www.kosovadayasam.com`'u da ekleyin.)
+3. Cloudflare DNS kaydını ve SSL sertifikasını otomatik oluşturur. Birkaç dakikada
+   `https://kosovadayasam.com` yayında olur.
 
 ---
 
 ## Güncelleme
 
+Kod değiştiğinde yeniden deploy:
 ```bash
-git pull
-docker compose up -d --build
+npm run cf:deploy
 ```
+Şema değiştiyse (yeni alan/tablo) `cloudflare/schema.sql`'i güncelleyip `npm run d1:schema`
+ile uygulayın. Mevcut veriyi koruyan değişiklikler için `ALTER TABLE` kullanın.
 
-Şema değişmişse entrypoint `prisma db push` ile otomatik senkronlar.
+## Alternatif: Panelden (Git ile) deploy
+
+Terminal yerine Cloudflare panelinden de yapılabilir:
+1. Dashboard → **Workers & Pages → Create → Import a repository** → bu repo + dalı seçin.
+2. Build komutu: `npx opennextjs-cloudflare build` · Deploy komutu: `npx wrangler deploy`.
+3. D1'i panelden oluşturup worker'a **DB** adıyla bind edin; `cloudflare/schema.sql` ve
+   `cloudflare/seed.sql` içeriğini D1 konsoluna yapıştırarak uygulayın.
+4. **Settings → Variables and Secrets** → `AUTH_SECRET` ekleyin.
+5. 6. adımdaki gibi özel domaini bağlayın.
 
 ---
 
 ## Güvenlik kontrol listesi
 
-- [ ] `AUTH_SECRET` güçlü ve gizli (production'da eksikse uygulama başlamaz)
-- [ ] `POSTGRES_PASSWORD` güçlü
-- [ ] HTTPS arkasında (dahili Caddy veya reverse proxy + TLS)
-- [ ] Yönetici ilk şifresi değiştirildi, `.env`'den `ADMIN_PASSWORD` temizlendi
-- [ ] Sunucu firewall'u: yalnızca 80/443 dışarı açık; 3000 ve 5432 yalnızca yerel
-- [ ] Düzenli DB yedeği
-
----
+- [ ] `AUTH_SECRET` güçlü ve yalnızca Worker secret'ı olarak saklı
+- [ ] `wrangler.jsonc` içinde gerçek `database_id` var
+- [ ] İlk girişten sonra admin şifresi değiştirildi
+- [ ] Özel domain SSL'i aktif (`https://kosovadayasam.com`)
 
 ## Yerel geliştirme
 
-Yerelde **SQLite** kullanılır (Docker gerektirmez):
-
-```bash
-npm install
-cp .env.example .env
-npx prisma migrate dev
-npm run seed      # örnek içerik + admin (admin@prokosovasolutions.com / admin1234)
-npm run dev
-```
-
-`prisma/schema.prisma` yerelde `provider = "sqlite"` kalır; Docker imajı derlenirken
-`scripts/use-postgres.mjs` bunu imaj içinde `postgresql` yapar. Committed dosya değişmez.
-
----
-
-## Rotalar
-
-| Alan | Rota | Açıklama |
-|------|------|----------|
-| Herkese açık site | `/` | Ana sayfa, hizmetler, hakkımızda, blog, iletişim, randevu |
-| Yönetici girişi | `/login` | Oturum açma |
-| Yönetim paneli | `/admin` | Mesajlar, randevular, blog yazıları, hizmetler |
-
-Başlangıç içeriği `prisma/seed-data.mjs` dosyasında; marka/iletişim bilgileri `src/lib/site-config.ts`.
+Bkz. [README.md](./README.md) — `npm run cf:preview` + yerel D1.

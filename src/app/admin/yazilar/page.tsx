@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { Plus, Pencil, Eye, EyeOff, ExternalLink } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 import { togglePostPublishedAction } from "@/lib/actions/admin";
 
 export default async function PostsAdminPage() {
-  const posts = await prisma.post.findMany({ orderBy: { publishedAt: "desc" } });
+  const posts = await getDb().query.post.findMany({ orderBy: (p, { desc }) => desc(p.publishedAt) });
 
   return (
     <div className="space-y-6">

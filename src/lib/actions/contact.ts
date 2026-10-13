@@ -1,6 +1,7 @@
 "use server";
 
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
+import { contactMessage } from "@/lib/schema";
 
 export type ContactState = { ok?: boolean; error?: string } | undefined;
 
@@ -34,23 +35,25 @@ export async function submitContactAction(
     return { ok: true };
   }
 
+  const db = getDb();
   let serviceId: string | null = null;
   if (serviceSlug) {
-    const service = await prisma.service.findUnique({ where: { slug: serviceSlug }, select: { id: true } });
-    serviceId = service?.id ?? null;
+    const svc = await db.query.service.findFirst({
+      where: (s, { eq }) => eq(s.slug, serviceSlug),
+      columns: { id: true },
+    });
+    serviceId = svc?.id ?? null;
   }
 
-  await prisma.contactMessage.create({
-    data: {
-      name,
-      email,
-      phone: phone || null,
-      company: company || null,
-      subject: subject || null,
-      message,
-      kind,
-      serviceId,
-    },
+  await db.insert(contactMessage).values({
+    name,
+    email,
+    phone: phone || null,
+    company: company || null,
+    subject: subject || null,
+    message,
+    kind,
+    serviceId,
   });
 
   return { ok: true };

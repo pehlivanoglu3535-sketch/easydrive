@@ -1,6 +1,7 @@
 "use server";
 
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
+import { appointment } from "@/lib/schema";
 import { isValidSlot } from "@/lib/appointments";
 
 export type AppointmentState = { ok?: boolean; error?: string } | undefined;
@@ -33,11 +34,12 @@ export async function bookAppointmentAction(
   }
 
   const slot = new Date(slotIso);
+  const db = getDb();
 
-  // Çifte rezervasyon kontrolü (yarış durumu için DB kısıtı da yakalar)
-  const existing = await prisma.appointment.findFirst({
-    where: { slot, status: { in: ["PENDING", "CONFIRMED"] } },
-    select: { id: true },
+  // Çifte rezervasyon kontrolü (uygulama seviyesinde)
+  const existing = await db.query.appointment.findFirst({
+    where: (a, { and, eq, inArray }) => and(eq(a.slot, slot), inArray(a.status, ["PENDING", "CONFIRMED"])),
+    columns: { id: true },
   });
   if (existing) {
     return { error: "Bu saat az önce doldu. Lütfen başka bir saat seçin." };
@@ -45,19 +47,20 @@ export async function bookAppointmentAction(
 
   let serviceId: string | null = null;
   if (serviceSlug) {
-    const service = await prisma.service.findUnique({ where: { slug: serviceSlug }, select: { id: true } });
-    serviceId = service?.id ?? null;
+    const svc = await db.query.service.findFirst({
+      where: (s, { eq }) => eq(s.slug, serviceSlug),
+      columns: { id: true },
+    });
+    serviceId = svc?.id ?? null;
   }
 
-  await prisma.appointment.create({
-    data: {
-      name,
-      email,
-      phone: phone || null,
-      note: note || null,
-      slot,
-      serviceId,
-    },
+  await db.insert(appointment).values({
+    name,
+    email,
+    phone: phone || null,
+    note: note || null,
+    slot,
+    serviceId,
   });
 
   return { ok: true };

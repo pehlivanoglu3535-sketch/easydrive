@@ -1,13 +1,19 @@
-import { PrismaClient } from "@prisma/client";
+import { drizzle } from "drizzle-orm/d1";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { schema } from "./schema";
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
+/**
+ * İstek kapsamında Cloudflare D1 binding'ini alıp Drizzle örneği döndürür.
+ * (Prisma Cloudflare Workers'ta çalışmadığı için Drizzle kullanılıyor.)
+ */
+export function getDb() {
+  const { env } = getCloudflareContext();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const d1 = (env as any).DB;
+  if (!d1) {
+    throw new Error("D1 binding (DB) bulunamadı. wrangler.jsonc içindeki d1_databases ayarını kontrol edin.");
+  }
+  return drizzle(d1, { schema });
+}
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
-  });
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+export type DB = ReturnType<typeof getDb>;

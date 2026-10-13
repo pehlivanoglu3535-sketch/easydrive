@@ -52,3 +52,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Cloudflare / OpenNext
+/.open-next/
+/.wrangler/
+cloudflare-env.d.ts
+
+# Prisma generated client (build sırasında üretilir)
+/src/generated/
+
+# wrangler local secrets
+.dev.vars

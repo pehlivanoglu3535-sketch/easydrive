@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { createSession, destroySession, verifyPassword } from "@/lib/auth";
 
 export type LoginState = { error?: string } | undefined;
@@ -14,7 +14,7 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
     return { error: "E-posta ve şifre gerekli." };
   }
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await getDb().query.user.findFirst({ where: (u, { eq }) => eq(u.email, email) });
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
     return { error: "E-posta veya şifre hatalı." };
   }

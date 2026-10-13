@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    orderBy: { publishedAt: "desc" },
+  const posts = await getDb().query.post.findMany({
+    where: (p, { eq }) => eq(p.published, true),
+    orderBy: (p, { desc }) => desc(p.publishedAt),
   });
 
   const [featured, ...rest] = posts;
