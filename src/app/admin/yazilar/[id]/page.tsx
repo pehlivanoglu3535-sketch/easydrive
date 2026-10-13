@@ -40,7 +40,7 @@ export default async function PostEditorPage({ params, searchParams }: PageProps
           </div>
           <div>
             <label className="label" htmlFor="author">Yazar</label>
-            <input id="author" name="author" defaultValue={post?.author ?? "Meridyen Ekibi"} className="input" />
+            <input id="author" name="author" defaultValue={post?.author ?? "ProKosova Solutions"} className="input" />
           </div>
         </div>
 

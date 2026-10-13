@@ -1,4 +1,4 @@
-# Meridyen Danışmanlık — Production'a Alma Rehberi
+# ProKosova Solutions — Production'a Alma Rehberi
 
 Kurumsal danışmanlık web sitesi (tanıtım + yönetim paneli). Next.js 16 + Prisma + PostgreSQL,
 tek `docker compose` ile.
@@ -125,7 +125,7 @@ Yerelde **SQLite** kullanılır (Docker gerektirmez):
 npm install
 cp .env.example .env
 npx prisma migrate dev
-npm run seed      # örnek içerik + admin (admin@meridyendanismanlik.com / admin1234)
+npm run seed      # örnek içerik + admin (admin@prokosovasolutions.com / admin1234)
 npm run dev
 ```
 

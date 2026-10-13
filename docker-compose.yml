@@ -1,4 +1,4 @@
-# ─── Meridyen Danışmanlık production stack ───
+# ─── ProKosova Solutions production stack ───
 # Kullanım:  cp .env.production.example .env  →  doldur  →  docker compose up -d --build
 # Düz VPS'te de, Coolify/Dokku'da da çalışır. Veriler kalıcı volume'da.
 

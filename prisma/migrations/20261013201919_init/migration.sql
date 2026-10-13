@@ -31,7 +31,7 @@ CREATE TABLE "Post" (
     "excerpt" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "coverImage" TEXT,
-    "author" TEXT NOT NULL DEFAULT 'Meridyen Ekibi',
+    "author" TEXT NOT NULL DEFAULT 'ProKosova Solutions',
     "category" TEXT,
     "published" BOOLEAN NOT NULL DEFAULT true,
     "publishedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

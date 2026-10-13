@@ -1,4 +1,4 @@
-# Meridyen Danışmanlık — Kurumsal Web Sitesi
+# ProKosova Solutions — Kurumsal Web Sitesi
 
 Çok disiplinli bir danışmanlık şirketi için tanıtım sitesi + yönetim paneli.
 İş & yönetim, mali müşavirlik, göçmenlik ve yazılım danışmanlığı hizmetlerini
@@ -33,7 +33,7 @@ npm run dev
 
 Site: http://localhost:3000 — Panel: http://localhost:3000/admin
 
-**Varsayılan yönetici girişi:** `admin@meridyendanismanlik.com` / `admin1234`
+**Varsayılan yönetici girişi:** `admin@prokosovasolutions.com` / `admin1234`
 (`.env` içinden `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` ile değiştirilebilir.)
 
 ## Yapı

@@ -26,7 +26,7 @@ export function LoginForm() {
       )}
       <div>
         <label className="label" htmlFor="email">E-posta</label>
-        <input id="email" name="email" type="email" required autoFocus className="input" placeholder="admin@meridyendanismanlik.com" />
+        <input id="email" name="email" type="email" required autoFocus className="input" placeholder="admin@prokosovasolutions.com" />
       </div>
       <div>
         <label className="label" htmlFor="password">Şifre</label>

@@ -7,19 +7,19 @@
   --foreground: #0b1324;
   --muted: #5b6b85;
 
-  /* Marka — kurumsal lacivert + altın vurgu (danışmanlık) */
-  --brand: #16305c;
-  --brand-600: #1b3d73;
-  --brand-700: #112445;
-  --brand-50: #eef3fa;
-  --brand-100: #d9e4f3;
-  --accent: #c0922e;
-  --accent-600: #a67d22;
-  --accent-50: #faf4e6;
+  /* Marka — ProKosova Solutions logosu: mavi + altın */
+  --brand: #1b4f8f;
+  --brand-600: #1b4f8f;
+  --brand-700: #143a68;
+  --brand-50: #eef4fb;
+  --brand-100: #d6e4f4;
+  --accent: #c6a24a;
+  --accent-600: #a9842d;
+  --accent-50: #faf4e4;
 
   /* Kenarlık & gölge */
   --border: #e4e8ef;
-  --ring: rgba(22, 48, 92, 0.16);
+  --ring: rgba(27, 79, 143, 0.18);
 }
 
 @theme inline {

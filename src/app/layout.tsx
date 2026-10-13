@@ -12,11 +12,10 @@ export const metadata: Metadata = {
     template: `%s — ${site.name}`,
   },
   description: site.description,
-  icons: { icon: "/icon.svg" },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#16305c",
+  themeColor: "#1b4f8f",
   width: "device-width",
   initialScale: 1,
 };

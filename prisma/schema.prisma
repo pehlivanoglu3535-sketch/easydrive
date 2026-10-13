@@ -1,4 +1,4 @@
-// Meridyen Danışmanlık — kurumsal danışmanlık web sitesi veri modeli
+// ProKosova Solutions — kurumsal danışmanlık web sitesi veri modeli
 generator client {
   provider = "prisma-client-js"
   // native = yerel geliştirme; debian = Docker imajı (node:slim).
@@ -71,7 +71,7 @@ model Post {
   excerpt     String // özet
   content     String // gövde (paragraflar \n\n ile; "## " ile alt başlık)
   coverImage  String?
-  author      String    @default("Meridyen Ekibi")
+  author      String    @default("ProKosova Solutions")
   category    String? // "İş Dünyası", "Vergi", "Göçmenlik", "Teknoloji"
   published   Boolean   @default(true)
   publishedAt DateTime  @default(now())

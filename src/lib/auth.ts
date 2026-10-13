@@ -5,7 +5,7 @@ import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import type { Role } from "@prisma/client";
 
-const COOKIE_NAME = "meridyen_session";
+const COOKIE_NAME = "prokosova_session";
 
 // Oturum imzalama anahtarı — tembel (ilk kullanımda) hesaplanır, modül yüklenirken değil.
 // Böylece build sırasında env yokken hata vermez; production'da eksikse ilk istekte net hata verir.

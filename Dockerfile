@@ -1,4 +1,4 @@
-# ─── Meridyen Danışmanlık production imajı (Next.js 16 + Prisma + Postgres) ───
+# ─── ProKosova Solutions production imajı (Next.js 16 + Prisma + Postgres) ───
 # Çok aşamalı: builder (tam kurulum + derleme) → runner (dev bağımlılıkları çıkarılmış).
 # Prisma normal bir "dependency" olduğu için CLI (db push) runtime'da tam çalışır.
 

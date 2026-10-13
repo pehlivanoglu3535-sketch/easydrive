@@ -12,8 +12,8 @@ export const dynamic = "force-dynamic";
 
 const TRUST = [
   "İlk görüşme ücretsiz",
-  "KVKK uyumlu süreç",
-  "Sektörel uzmanlık",
+  "Uçtan uca takip",
+  "Kosova'da yerel uzmanlık",
 ];
 
 const APPROACH = [
@@ -31,16 +31,9 @@ const STEPS = [
 ];
 
 const TESTIMONIALS = [
-  { quote: "Finansal süreçlerimizi baştan sona düzene soktular. Artık rakamlara güveniyoruz.", name: "Elif Yıldız", role: "Kurucu Ortak, Yıldız Tekstil" },
-  { quote: "Yurt dışı açılım stratejimizi birlikte kurduk; ilk yılda hedefin üzerine çıktık.", name: "Murat Kaya", role: "Genel Müdür, Kaya Makine" },
-  { quote: "Hem danışmanlık hem de yazılım tarafında tek muhatap olmaları büyük kolaylık.", name: "Deniz Arslan", role: "COO, Arslan Lojistik" },
-];
-
-const STATS = [
-  ["13+", "Yıllık tecrübe"],
-  ["450+", "Tamamlanan proje"],
-  ["200+", "Mutlu kurum"],
-  ["%96", "Tekrar çalışma oranı"],
+  { quote: "Türkiye'den gelip Kosova'da şirketimi günler içinde kurdular; her adımda yanımdaydılar.", name: "Okan Demir", role: "Kurucu, Demir Yazılım" },
+  { quote: "Oturum sürecimi sıfır stresle tamamladılar. Ben işimi büyütmeye odaklandım.", name: "Ayşe Kılıç", role: "Yatırımcı" },
+  { quote: "Muhasebe ve vergi tarafını onlara emanet ettim; artık mevzuat derdim yok.", name: "Mehmet Aras", role: "Aras Lojistik" },
 ];
 
 export default async function HomePage() {
@@ -57,13 +50,13 @@ export default async function HomePage() {
         <div className="absolute -right-32 -top-32 -z-10 h-96 w-96 rounded-full bg-accent-50 blur-3xl" />
         <div className="container-site grid items-center gap-14 py-20 lg:grid-cols-2 lg:py-28">
           <div>
-            <span className="eyebrow">Kurumsal Danışmanlık</span>
+            <span className="eyebrow">Kosova • Kurumsal Danışmanlık</span>
             <h1 className="mt-4 text-4xl font-bold leading-[1.1] tracking-tight text-slate-900 sm:text-5xl">
-              Büyümenizi hızlandıran <span className="text-brand-700">stratejik</span> çözüm ortağınız
+              Kosova&apos;da <span className="text-brand-700">şirketinizi</span> kurun, oturumunuzu alın
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-600">
-              İş & yönetim, mali müşavirlik, göçmenlik ve yazılım danışmanlığında
-              uzman ekibimizle kurumunuzu bir sonraki aşamaya taşıyoruz.
+              Şirket kuruluşundan oturuma, muhasebeden yatırıma kadar; 6 yıllık saha
+              tecrübemizle Kosova&apos;da iş yapmanın her adımında yanınızdayız.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/iletisim?tur=teklif" className="btn-accent">
@@ -84,8 +77,8 @@ export default async function HomePage() {
           <div className="relative">
             <div className="card p-6 shadow-xl shadow-brand-100/50">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-500">Büyüme Panosu</span>
-                <span className="badge bg-emerald-50 text-emerald-700 ring-emerald-200">+%24 bu çeyrek</span>
+                <span className="text-sm font-semibold text-slate-500">Başarı Panosu</span>
+                <span className="badge bg-emerald-50 text-emerald-700 ring-emerald-200">6+ yıl Kosova</span>
               </div>
               <div className="mt-5 flex items-end gap-2.5">
                 {[38, 52, 46, 64, 58, 78, 92].map((h, i) => (
@@ -95,7 +88,7 @@ export default async function HomePage() {
                 ))}
               </div>
               <div className="mt-6 grid grid-cols-2 gap-3">
-                {[["Ciro", "₺4,2M", "text-brand-700"], ["Verimlilik", "+%31", "text-emerald-600"]].map(([l, v, c]) => (
+                {[["Kurulan şirket", "600+", "text-brand-700"], ["Alınan oturum", "820+", "text-emerald-600"]].map(([l, v, c]) => (
                   <div key={l} className="rounded-xl border bg-slate-50/60 p-4">
                     <div className="text-xs text-slate-400">{l}</div>
                     <div className={`mt-1 text-xl font-bold ${c}`}>{v}</div>
@@ -108,8 +101,8 @@ export default async function HomePage() {
                 <TrendingUp size={20} />
               </div>
               <div>
-                <div className="text-sm font-semibold text-slate-900">450+ proje</div>
-                <div className="text-xs text-slate-500">başarıyla tamamlandı</div>
+                <div className="text-sm font-semibold text-slate-900">600+ şirket</div>
+                <div className="text-xs text-slate-500">başarıyla kuruldu</div>
               </div>
             </div>
           </div>
@@ -150,14 +143,15 @@ export default async function HomePage() {
             <div>
               <span className="eyebrow">Neden {site.shortName}?</span>
               <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-                İşinizi gerçekten anlayan bir ekip
+                Kosova&apos;yı ve mevzuatı içeriden bilen bir ekip
               </h2>
               <p className="mt-4 text-slate-600">
-                {site.foundedYear} yılından bu yana farklı ölçeklerde kurumlarla çalışıyoruz.
-                Hazır şablonlar değil; sizin gerçeğinize uygun, uygulanabilir çözümler üretiyoruz.
+                {site.foundedYear} yılından bu yana Kosova&apos;da yabancı girişimci ve yatırımcılarla
+                çalışıyoruz. Hazır şablonlar değil; sizin durumunuza uygun, uçtan uca takip edilen
+                çözümler üretiyoruz.
               </p>
               <ul className="mt-6 space-y-3">
-                {["Deneyimli ve sertifikalı uzman kadro", "Sektöre özel yaklaşım", "Uygulama sonrası sürekli destek"].map((t) => (
+                {["Yerel mevzuata tam hâkimiyet", "Vekaletle uzaktan işlem imkânı", "Kuruluş sonrası sürekli destek"].map((t) => (
                   <li key={t} className="flex items-start gap-2.5 text-slate-700">
                     <CheckCircle2 size={20} className="mt-0.5 shrink-0 text-accent-600" /> {t}
                   </li>
@@ -200,10 +194,10 @@ export default async function HomePage() {
       {/* İstatistik bandı */}
       <section className="bg-brand-700 text-white">
         <div className="container-site grid grid-cols-2 gap-8 py-14 text-center lg:grid-cols-4">
-          {STATS.map(([v, l]) => (
-            <div key={l}>
-              <div className="text-4xl font-bold tracking-tight">{v}</div>
-              <div className="mt-1.5 text-sm text-brand-100">{l}</div>
+          {site.stats.map((s) => (
+            <div key={s.label}>
+              <div className="text-4xl font-bold tracking-tight">{s.value}</div>
+              <div className="mt-1.5 text-sm text-brand-100">{s.label}</div>
             </div>
           ))}
         </div>

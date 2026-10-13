@@ -82,7 +82,7 @@ export async function savePostAction(formData: FormData) {
   const excerpt = String(formData.get("excerpt") || "").trim();
   const content = String(formData.get("content") || "").trim();
   const category = String(formData.get("category") || "").trim();
-  const author = String(formData.get("author") || "").trim() || "Meridyen Ekibi";
+  const author = String(formData.get("author") || "").trim() || "ProKosova Solutions";
   const published = formData.get("published") === "on";
 
   if (!title || !excerpt || !content) {

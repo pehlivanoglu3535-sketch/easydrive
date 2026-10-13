@@ -5,7 +5,7 @@ import { services, posts, team } from "./seed-data.mjs";
 
 const prisma = new PrismaClient();
 
-const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || "admin@meridyendanismanlik.com";
+const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || "admin@prokosovasolutions.com";
 const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD || "admin1234";
 
 async function main() {

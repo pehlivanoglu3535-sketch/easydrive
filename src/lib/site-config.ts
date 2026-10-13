@@ -1,21 +1,21 @@
 /**
  * Site genel yapılandırması — marka adı, iletişim bilgileri, menü vb.
- * Markayı değiştirmek için tek nokta burasıdır.
+ * Markayı/iletişimi değiştirmek için tek nokta burasıdır.
  */
 
 export const site = {
-  name: "Meridyen Danışmanlık",
-  shortName: "Meridyen",
-  tagline: "Büyümenizi hızlandıran stratejik danışmanlık",
+  name: "ProKosova Solutions",
+  shortName: "ProKosova",
+  tagline: "Kosova'da iş kurmanın ve yaşamanın en kolay yolu",
   description:
-    "İş & yönetim, mali müşavirlik, göçmenlik ve yazılım danışmanlığında uçtan uca çözüm ortağınız. Kurumunuzu bir sonraki aşamaya taşıyın.",
+    "6 yıldır Kosova'da; 600'den fazla şirket kuruluşu ve 820'den fazla oturum başvurusuyla yabancı girişimci ve yatırımcıların güvenilir danışmanı.",
   // İletişim
-  email: "info@meridyendanismanlik.com",
-  phone: "+90 212 000 00 00",
-  phoneHref: "+902120000000",
-  whatsapp: "+90 532 000 00 00",
-  address: "Levent Mah. Büyükdere Cad. No:1, Şişli / İstanbul",
-  mapQuery: "Levent, İstanbul",
+  email: "info@prokosovasolutions.com",
+  phone: "+383 49 000 000",
+  phoneHref: "+38349000000",
+  whatsapp: "+383 49 000 000",
+  address: "Rr. Nëna Terezë, Prishtina, Kosova",
+  mapQuery: "Prishtina, Kosovo",
   workingHours: "Pazartesi – Cuma, 09:00 – 18:00",
   // Sosyal
   social: {
@@ -23,7 +23,20 @@ export const site = {
     instagram: "https://www.instagram.com/",
     twitter: "https://x.com/",
   },
-  foundedYear: 2012,
+  foundedYear: 2020,
+  // Kurucu / baş danışman
+  owner: {
+    name: "Bülent BOZKURT",
+    title: "Kurucu & Baş Danışman",
+    bio: "6 yılı aşkın süredir Kosova'da yabancı girişimci ve yatırımcılara danışmanlık veriyor. Bugüne kadar 600'den fazla şirketin kuruluşuna ve 820'den fazla oturum başvurusuna liderlik etti. Yerel mevzuata hâkimiyeti ve uçtan uca takip anlayışıyla, Kosova'da iş kurmak isteyenlerin en güvendiği isimlerden biri.",
+  },
+  // Öne çıkan istatistikler (ana sayfa + hakkımızda)
+  stats: [
+    { value: "6+", label: "Yıl Kosova tecrübesi" },
+    { value: "600+", label: "Kurulan şirket" },
+    { value: "820+", label: "Alınan oturum" },
+    { value: "%98", label: "Müşteri memnuniyeti" },
+  ],
 } as const;
 
 export const nav = [

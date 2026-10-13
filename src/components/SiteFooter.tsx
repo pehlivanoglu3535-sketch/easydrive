@@ -30,10 +30,10 @@ function XIcon() {
 }
 
 const services = [
-  { href: "/hizmetler/is-yonetim-danismanligi", label: "İş & Yönetim" },
-  { href: "/hizmetler/mali-musavirlik", label: "Mali Müşavirlik" },
-  { href: "/hizmetler/gocmenlik-vize", label: "Göçmenlik & Vize" },
-  { href: "/hizmetler/yazilim-bt-danismanligi", label: "Yazılım & BT" },
+  { href: "/hizmetler/sirket-kurulusu", label: "Şirket Kuruluşu" },
+  { href: "/hizmetler/oturum-calisma-izni", label: "Oturum & Çalışma İzni" },
+  { href: "/hizmetler/muhasebe-vergi", label: "Muhasebe & Vergi" },
+  { href: "/hizmetler/yatirim-is-danismanligi", label: "Yatırım & İş Danışmanlığı" },
 ];
 
 export function SiteFooter() {
