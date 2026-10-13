@@ -4,8 +4,7 @@ set -e
 echo "[entrypoint] Veritabanı bekleniyor & şema senkronlanıyor…"
 
 # Şemayı Postgres'e uygula. İlk açılışta tabloları oluşturur; sonraki açılışlarda
-# fark yoksa hızlı geçer. (Migration geçmişi olmadan doğrudan senkron — tek uygulama SaaS için güvenli.)
-# Bağlantı hazır olana kadar birkaç kez dene (compose'ta db healthcheck de var).
+# fark yoksa hızlı geçer. Bağlantı hazır olana kadar birkaç kez dener.
 tries=0
 until node node_modules/prisma/build/index.js db push --skip-generate --accept-data-loss; do
   tries=$((tries + 1))
@@ -17,8 +16,11 @@ until node node_modules/prisma/build/index.js db push --skip-generate --accept-d
   sleep 3
 done
 
-# Süper admin bootstrap (env verilmişse; idempotent).
+# Yönetici bootstrap (ADMIN_EMAIL/ADMIN_PASSWORD verilmişse; idempotent).
 node scripts/create-admin.mjs || echo "[entrypoint] create-admin atlandı."
+
+# Başlangıç içeriği (hizmet/blog/ekip) — yalnızca tablolar boşsa ekler.
+node scripts/seed-content.mjs || echo "[entrypoint] seed-content atlandı."
 
 echo "[entrypoint] Uygulama başlatılıyor: $*"
 exec "$@"

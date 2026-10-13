@@ -1,19 +1,19 @@
-# ─── RentFlow production stack ───
+# ─── Meridyen Danışmanlık production stack ───
 # Kullanım:  cp .env.production.example .env  →  doldur  →  docker compose up -d --build
-# Düz VPS'te de, Coolify/Dokku'da da çalışır. Verile­r kalıcı volume'larda.
+# Düz VPS'te de, Coolify/Dokku'da da çalışır. Veriler kalıcı volume'da.
 
 services:
   db:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-rentflow}
+      POSTGRES_USER: ${POSTGRES_USER:-meridyen}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD gerekli}
-      POSTGRES_DB: ${POSTGRES_DB:-rentflow}
+      POSTGRES_DB: ${POSTGRES_DB:-meridyen}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rentflow} -d ${POSTGRES_DB:-rentflow}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-meridyen} -d ${POSTGRES_DB:-meridyen}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -28,16 +28,13 @@ services:
         condition: service_healthy
     environment:
       # Uygulama içinden db servisine bağlantı (compose ağı).
-      DATABASE_URL: "postgresql://${POSTGRES_USER:-rentflow}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-rentflow}?schema=public"
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-meridyen}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-meridyen}?schema=public"
       AUTH_SECRET: ${AUTH_SECRET:?AUTH_SECRET gerekli}
       NODE_ENV: production
-      # İlk açılışta süper-admin oluşturulması için (bir kez; sonra kaldırabilirsin).
-      SUPER_ADMIN_EMAIL: ${SUPER_ADMIN_EMAIL:-}
-      SUPER_ADMIN_PASSWORD: ${SUPER_ADMIN_PASSWORD:-}
-      SUPER_ADMIN_NAME: ${SUPER_ADMIN_NAME:-}
-    volumes:
-      # Yüklenen logolar / araç fotoğrafları / imzalar — kalıcı.
-      - uploads:/app/public/uploads
+      # İlk açılışta yönetici oluşturulması için (bir kez; sonra kaldırabilirsin).
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ADMIN_NAME: ${ADMIN_NAME:-}
     # Yalnızca localhost'a bağlan — dışarıya Caddy (443) üzerinden açılır, 3000 public değil.
     ports:
       - "127.0.0.1:${APP_PORT:-3000}:3000"
@@ -51,7 +48,7 @@ services:
     depends_on:
       - app
     environment:
-      DOMAIN: ${DOMAIN:?DOMAIN gerekli (ör. eaysdriveks.com)}
+      DOMAIN: ${DOMAIN:?DOMAIN gerekli (ör. meridyendanismanlik.com)}
     ports:
       - "80:80"
       - "443:443"
@@ -62,6 +59,5 @@ services:
 
 volumes:
   pgdata:
-  uploads:
   caddy_data:
   caddy_config:

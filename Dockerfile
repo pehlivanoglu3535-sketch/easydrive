@@ -1,4 +1,4 @@
-# ─── RentFlow production imajı (Next.js 16 + Prisma + Postgres) ───
+# ─── Meridyen Danışmanlık production imajı (Next.js 16 + Prisma + Postgres) ───
 # Çok aşamalı: builder (tam kurulum + derleme) → runner (dev bağımlılıkları çıkarılmış).
 # Prisma normal bir "dependency" olduğu için CLI (db push) runtime'da tam çalışır.
 
@@ -40,9 +40,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 COPY --chown=nextjs:nodejs docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x docker-entrypoint.sh
-
-# Yükleme klasörü (volume mount noktası) — yazılabilir olmalı.
-RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public/uploads
 
 USER nextjs
 EXPOSE 3000

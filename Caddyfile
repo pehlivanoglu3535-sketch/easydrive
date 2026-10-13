@@ -1,35 +1,13 @@
-# RentFlow — otomatik HTTPS (Let's Encrypt). Domain .env'deki DOMAIN'den gelir.
+# Meridyen Danışmanlık — otomatik HTTPS (Let's Encrypt).
+# Domain .env'deki DOMAIN'den gelir. Tek siteli (çoklu kiracı/subdomain yok).
 
-# On-demand TLS: firma subdomain'leri için sertifikayı ilk erişimde alır.
-# "ask" ucu yalnızca gerçek firmalara izin verir (kötüye kullanım önlemi).
-{
-	on_demand_tls {
-		ask http://app:3000/api/tls-check
-	}
+# www → köke kalıcı yönlendirme.
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
 }
 
 # Kök domain → uygulama.
 {$DOMAIN} {
-	encode gzip
-	reverse_proxy app:3000
-}
-
-# Firma subdomain'leri + www: <ad>.easydriveks.com → uygulama.
-# www yönlendirmesi ve <firma> → /s/<firma> eşlemesi uygulama middleware'inde yapılır.
-*.{$DOMAIN} {
-	tls {
-		on_demand
-	}
-	encode gzip
-	reverse_proxy app:3000
-}
-
-# Firmaların KENDİ domainleri (Seviye 2) — herhangi bir host. On-demand TLS,
-# "ask" ucu yalnızca geçerli firma domainine sertifika verir.
-https:// {
-	tls {
-		on_demand
-	}
 	encode gzip
 	reverse_proxy app:3000
 }

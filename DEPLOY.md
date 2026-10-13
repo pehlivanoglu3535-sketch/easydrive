@@ -1,9 +1,10 @@
-# RentFlow — Production'a Alma Rehberi
+# Meridyen Danışmanlık — Production'a Alma Rehberi
 
-Kosova araç kiralama SaaS platformu. Next.js 16 + Prisma + PostgreSQL, tek `docker compose` ile.
+Kurumsal danışmanlık web sitesi (tanıtım + yönetim paneli). Next.js 16 + Prisma + PostgreSQL,
+tek `docker compose` ile.
 
 Bu kurulum **host-bağımsız**: düz bir VPS'te, Coolify'da veya Dokku'da aynı şekilde çalışır.
-Uygulama, veritabanı ve yüklenen dosyalar (logo, araç fotoğrafları, imzalar) kalıcıdır.
+Uygulama ve veritabanı (iletişim mesajları, randevular, blog yazıları, hizmetler) kalıcıdır.
 
 ---
 
@@ -13,31 +14,32 @@ Sunucuda Docker + Docker Compose kurulu olmalı.
 
 ```bash
 # 1) Projeyi sunucuya alın (git clone veya scp)
-cd rentacar
+cd easydrive
 
 # 2) Ortam dosyasını hazırlayın
 cp .env.production.example .env
 #    .env içini doldurun:
 #    - POSTGRES_PASSWORD : güçlü bir şifre
 #    - AUTH_SECRET       : openssl rand -base64 48
-#    - SUPER_ADMIN_EMAIL / SUPER_ADMIN_PASSWORD : ilk giriş için
+#    - ADMIN_EMAIL / ADMIN_PASSWORD : ilk yönetici girişi için
 
-# 3) Ayağa kaldırın (imajı derler, DB'yi kurar, şemayı uygular, süper-admin'i oluşturur)
+# 3) Ayağa kaldırın (imajı derler, DB'yi kurar, şemayı uygular, admini + içeriği oluşturur)
 docker compose up -d --build
 
 # 4) Logları izleyin
 docker compose logs -f app
 ```
 
-Uygulama `http://SUNUCU_IP:3000` adresinde açılır. `/login` → süper-admin bilgilerinizle girin → `/admin`.
+Uygulama `http://SUNUCU_IP:3000` adresinde açılır. `/login` → yönetici bilgilerinizle girin → `/admin`.
 
 ### İlk açılışta ne olur?
 - `db` servisi (Postgres 16) kalıcı `pgdata` volume'u ile başlar.
 - `app` entrypoint'i şemayı `prisma db push` ile Postgres'e uygular (tabloları oluşturur).
-- `SUPER_ADMIN_EMAIL/PASSWORD` verilmişse süper-admin oluşturulur (idempotent; varsa dokunmaz).
-- Firmalar **elle** eklenir (`/admin`) — demo veri yüklenmez.
+- `ADMIN_EMAIL/PASSWORD` verilmişse yönetici oluşturulur (idempotent; varsa dokunmaz).
+- Başlangıç içeriği (4 hizmet, 4 blog yazısı, ekip) **yalnızca ilgili tablolar boşsa** eklenir —
+  böylece panelden yaptığınız düzenlemeler yeniden deploy'da ezilmez.
 
-> Güvenlik: Süper-admin oluşturulduktan sonra `.env` içindeki `SUPER_ADMIN_PASSWORD` satırını
+> Güvenlik: Yönetici oluşturulduktan sonra `.env` içindeki `ADMIN_PASSWORD` satırını
 > boşaltıp `docker compose up -d` ile yeniden başlatabilirsiniz.
 
 ---
@@ -45,16 +47,27 @@ Uygulama `http://SUNUCU_IP:3000` adresinde açılır. `/login` → süper-admin 
 ## HTTPS (production'da zorunlu)
 
 Cookie'ler `NODE_ENV=production` altında `secure` olduğundan, uygulama **HTTPS arkasında** çalışmalı.
-Bir reverse proxy kullanın:
 
-- **Caddy** (en kolay, otomatik Let's Encrypt): `app:3000`'e ters vekil.
-- **Nginx / Traefik**: TLS sonlandırma + `proxy_pass http://127.0.0.1:3000`.
-- **Coolify / Dokku**: TLS'i kendileri yönetir; sadece uygulama portunu tanıtın.
+### Seçenek A — Dahil edilen Caddy (en kolay, otomatik Let's Encrypt)
 
-Örnek `Caddyfile`:
+`.env` içine `DOMAIN=alanadiniz.com` yazın, DNS A kaydını sunucu IP'sine yönlendirin ve:
+
+```bash
+docker compose --profile proxy up -d
 ```
-rentflow.senindomainin.com {
-    reverse_proxy 127.0.0.1:3000
+
+Caddy 80/443'ü dinler, sertifikayı otomatik alır ve `app:3000`'e vekil yapar.
+`www` otomatik olarak köke yönlendirilir (bkz. `Caddyfile`).
+
+### Seçenek B — Mevcut reverse proxy (Nginx / Traefik / Coolify / Dokku)
+
+Caddy profilini başlatmayın; TLS'i proxy'niz yönetsin ve `127.0.0.1:3000`'e `proxy_pass` yapın.
+Örnek Nginx:
+
+```nginx
+server {
+  server_name alanadiniz.com;
+  location / { proxy_pass http://127.0.0.1:3000; proxy_set_header Host $host; }
 }
 ```
 
@@ -63,9 +76,8 @@ rentflow.senindomainin.com {
 ## Coolify / Dokku ile
 
 - **Coolify**: "Docker Compose" kaynağı olarak bu repo'yu ekleyin; `.env` değişkenlerini panelde girin.
-  `pgdata` ve `uploads` volume'ları kalıcı kalır; TLS otomatik.
-- **Dokku**: `Dockerfile` tabanlı deploy + `dokku postgres` eklentisi. `uploads` için kalıcı storage mount edin:
-  `dokku storage:mount rentflow /var/lib/dokku/data/storage/rentflow-uploads:/app/public/uploads`.
+  `pgdata` volume'u kalıcı kalır; TLS otomatik.
+- **Dokku**: `Dockerfile` tabanlı deploy + `dokku postgres` eklentisi (`DATABASE_URL`'i verir).
 
 Harici (yönetilen) Postgres kullanacaksanız compose'taki `db` servisini kaldırıp
 `DATABASE_URL`'i doğrudan verin.
@@ -76,14 +88,10 @@ Harici (yönetilen) Postgres kullanacaksanız compose'taki `db` servisini kaldı
 
 ```bash
 # Veritabanı yedeği
-docker compose exec db pg_dump -U rentflow rentflow > yedek-$(date +%F).sql
-
-# Yüklenen dosyalar (logo/foto/imza)
-docker run --rm -v rentacar_uploads:/data -v "$PWD":/backup alpine \
-  tar czf /backup/uploads-$(date +%F).tar.gz -C /data .
+docker compose exec db pg_dump -U meridyen meridyen > yedek-$(date +%F).sql
 ```
 
-Geri yükleme: `pg_dump` çıktısını `psql` ile, tar'ı ilgili volume'a açın.
+Geri yükleme: `pg_dump` çıktısını `psql` ile açın.
 
 ---
 
@@ -102,32 +110,36 @@ docker compose up -d --build
 
 - [ ] `AUTH_SECRET` güçlü ve gizli (production'da eksikse uygulama başlamaz)
 - [ ] `POSTGRES_PASSWORD` güçlü
-- [ ] HTTPS arkasında (reverse proxy + TLS)
-- [ ] Süper-admin ilk şifresi değiştirildi, `.env`'den `SUPER_ADMIN_PASSWORD` temizlendi
+- [ ] HTTPS arkasında (dahili Caddy veya reverse proxy + TLS)
+- [ ] Yönetici ilk şifresi değiştirildi, `.env`'den `ADMIN_PASSWORD` temizlendi
 - [ ] Sunucu firewall'u: yalnızca 80/443 dışarı açık; 3000 ve 5432 yalnızca yerel
-- [ ] Düzenli DB + uploads yedeği
+- [ ] Düzenli DB yedeği
 
 ---
 
-## Yerel geliştirme (değişmedi)
+## Yerel geliştirme
 
-Yerelde **SQLite** kullanılmaya devam eder (Windows, Docker gerektirmez):
+Yerelde **SQLite** kullanılır (Docker gerektirmez):
+
 ```bash
 npm install
+cp .env.example .env
+npx prisma migrate dev
+npm run seed      # örnek içerik + admin (admin@meridyendanismanlik.com / admin1234)
 npm run dev
 ```
+
 `prisma/schema.prisma` yerelde `provider = "sqlite"` kalır; Docker imajı derlenirken
 `scripts/use-postgres.mjs` bunu imaj içinde `postgresql` yapar. Committed dosya değişmez.
 
 ---
 
-## Roller ve rotalar
+## Rotalar
 
-| Rol | Giriş | Alan |
-|-----|-------|------|
-| Süper Admin | `/login` | `/admin` — firmalar, abonelik, faturalar |
-| Firma Yöneticisi / Personel | `/login` | `/panel` — filo, rezervasyon, sözleşme, fiyat, rapor |
-| Araç Teslim Personeli | `/login` | `/panel/handover` — teslim/iade formu |
+| Alan | Rota | Açıklama |
+|------|------|----------|
+| Herkese açık site | `/` | Ana sayfa, hizmetler, hakkımızda, blog, iletişim, randevu |
+| Yönetici girişi | `/login` | Oturum açma |
+| Yönetim paneli | `/admin` | Mesajlar, randevular, blog yazıları, hizmetler |
 
-Her firmanın markalı sitesi: `/s/<slug>` (kendi logo + rengi, misafir rezervasyon).
-Paneller 3 dilli (sq/en/tr); süper-admin paneli sabit.
+Başlangıç içeriği `prisma/seed-data.mjs` dosyasında; marka/iletişim bilgileri `src/lib/site-config.ts`.
