@@ -3,12 +3,45 @@
 Kurumsal danışmanlık web sitesi (tanıtım + yönetim paneli). Next.js 16 + Prisma + PostgreSQL,
 tek `docker compose` ile.
 
-Bu kurulum **host-bağımsız**: düz bir VPS'te, Coolify'da veya Dokku'da aynı şekilde çalışır.
-Uygulama ve veritabanı (iletişim mesajları, randevular, blog yazıları, hizmetler) kalıcıdır.
+Bu kurulum **host-bağımsız**: yönetilen bir platformda (Railway/Render), düz bir VPS'te,
+Coolify'da veya Dokku'da aynı şekilde çalışır. Uygulama ve veritabanı (iletişim mesajları,
+randevular, blog yazıları, hizmetler) kalıcıdır.
 
 ---
 
-## Hızlı başlangıç (VPS + Docker)
+## Önerilen: Railway (yönetilen platform) + Cloudflare DNS
+
+En az uğraşla canlıya alma yolu. Railway bu repodaki `Dockerfile`'ı otomatik derler;
+açılışta entrypoint şemayı kurar, yöneticiyi ve içeriği yükler.
+
+**1) Veritabanı**
+- Railway → New Project → **Add PostgreSQL**. Railway bir `DATABASE_URL` üretir.
+
+**2) Uygulama servisi**
+- Aynı projede → **Deploy from GitHub repo** → `pehlivanoglu3535-sketch/easydrive` (ilgili dal).
+- Railway `Dockerfile`'ı otomatik algılar ve derler.
+- Servisin **Variables** bölümüne şunları ekleyin:
+  - `DATABASE_URL` = Postgres servisine referans (Railway: `${{Postgres.DATABASE_URL}}`)
+  - `AUTH_SECRET` = güçlü rastgele değer (`openssl rand -base64 48`)
+  - `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME` = ilk yönetici
+  - `NODE_ENV` = `production`
+  - `DOMAIN` = `kosovadayasam.com`
+- Deploy edin. Entrypoint `prisma db push` + `create-admin` + `seed-content` çalıştırır.
+
+**3) Özel domain (Cloudflare)**
+- Railway → servis → **Settings → Networking → Custom Domain** → `kosovadayasam.com` ekleyin.
+  Railway size bir **CNAME hedefi** verir.
+- Cloudflare → `kosovadayasam.com` DNS:
+  - `CNAME  @ (veya www)  →  <railway-hedefi>`
+  - İlk doğrulama için **DNS only (gri bulut)** bırakın; Railway sertifikayı alsın.
+  - Çalıştıktan sonra isterseniz turuncu bulut (proxy) + SSL **Full (strict)** açabilirsiniz.
+- Kök domain için CNAME flattening Cloudflare'de otomatik çalışır.
+
+> Railway `PORT` değişkenini otomatik verir; `next start` bunu kullanır (ek ayar gerekmez).
+
+---
+
+## Alternatif: VPS + Docker
 
 Sunucuda Docker + Docker Compose kurulu olmalı.
 
