@@ -3,174 +3,220 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
+const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || "admin@meridyendanismanlik.com";
+const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD || "admin1234";
+
+const services = [
+  {
+    slug: "is-yonetim-danismanligi",
+    title: "İş & Yönetim Danışmanlığı",
+    icon: "TrendingUp",
+    order: 1,
+    summary: "Stratejiden uygulamaya; büyüme, verimlilik ve kurumsallaşma yolculuğunuzda yanınızdayız.",
+    features: [
+      "Büyüme ve pazara giriş stratejisi",
+      "Süreç ve operasyon iyileştirme",
+      "Kurumsallaşma ve organizasyon tasarımı",
+      "KPI ve performans yönetimi",
+      "Değişim ve proje yönetimi",
+    ].join("\n"),
+    description: [
+      "İşletmenizin bugünü ile ulaşmak istediğiniz nokta arasındaki yolu birlikte planlıyoruz. Önce mevcut durumu, pazarı ve rekabeti analiz ediyor; ardından uygulanabilir, ölçülebilir bir strateji ortaya koyuyoruz.",
+      "## Neler yapıyoruz?",
+      "Hedef belirlemeden organizasyon yapısına, süreç tasarımından performans yönetimine kadar yönetimin tüm katmanlarında pratik çözümler üretiyoruz. Teoride kalan raporlar yerine, ekibinizle birlikte sahada hayata geçirilen aksiyon planları hazırlıyoruz.",
+      "## Kimler için?",
+      "- Hızlı büyüyen ve kurumsallaşmak isteyen KOBİ'ler",
+      "- Yeni pazarlara açılmayı planlayan şirketler",
+      "- Verimlilik ve kârlılığını artırmak isteyen işletmeler",
+      "İlk görüşmede ihtiyaçlarınızı dinliyor, size özel bir yol haritası öneriyoruz.",
+    ].join("\n\n"),
+  },
+  {
+    slug: "mali-musavirlik",
+    title: "Mali Müşavirlik & Muhasebe",
+    icon: "Calculator",
+    order: 2,
+    summary: "Muhasebe, vergi ve finansal raporlamada mevzuata tam uyumlu, güvenilir çözümler.",
+    features: [
+      "Muhasebe ve defter tutma",
+      "Vergi planlaması ve beyanname",
+      "Bordro ve SGK işlemleri",
+      "Finansal raporlama ve analiz",
+      "Şirket kuruluş ve tasfiye",
+    ].join("\n"),
+    description: [
+      "Rakamlarınıza güvenmeniz için buradayız. Muhasebe süreçlerinizi düzene sokuyor, vergi yükünüzü yasal sınırlar içinde optimize ediyor ve finansal durumunuzu anlaşılır raporlarla önünüze koyuyoruz.",
+      "## Hizmet kapsamı",
+      "Günlük muhasebeden dönem sonu işlemlerine, bordrodan resmî beyannamelere kadar tüm mali süreçlerinizi uçtan uca yönetiyoruz. Böylece siz işinize odaklanırken biz mevzuatı takip ediyoruz.",
+      "## Neden biz?",
+      "- Güncel mevzuata tam uyum ve zamanında bildirim",
+      "- Vergi avantajlarının proaktif takibi",
+      "- Yöneticiye özel, sade finansal raporlar",
+      "Düzenli bilgilendirme ve şeffaf çalışma biçimimizle sürprizlerle karşılaşmazsınız.",
+    ].join("\n\n"),
+  },
+  {
+    slug: "gocmenlik-vize",
+    title: "Göçmenlik & Vize Danışmanlığı",
+    icon: "Plane",
+    order: 3,
+    summary: "Yurt dışında eğitim, çalışma, yatırım ve oturum süreçlerinde uçtan uca rehberlik.",
+    features: [
+      "Çalışma ve oturum izni başvuruları",
+      "Yatırım yoluyla vatandaşlık",
+      "Öğrenci vizesi ve eğitim danışmanlığı",
+      "Aile birleşimi süreçleri",
+      "Belge hazırlama ve başvuru takibi",
+    ].join("\n"),
+    description: [
+      "Yurt dışı hayalinizi gerçeğe dönüştürürken, karmaşık bürokratik süreçleri sizin için sadeleştiriyoruz. Doğru ülke ve doğru program seçiminden başvuru dosyasının hazırlanmasına kadar her adımda yanınızdayız.",
+      "## Süreç nasıl işliyor?",
+      "Önce hedeflerinizi ve profilinizi değerlendiriyor, size en uygun seçenekleri sunuyoruz. Ardından gereken belgeleri eksiksiz hazırlıyor, başvuruyu yapıyor ve sonuçlanana kadar süreci takip ediyoruz.",
+      "## Uzmanlık alanlarımız",
+      "- Çalışma ve oturum izinleri",
+      "- Yatırımcı ve girişimci programları",
+      "- Öğrenci vizeleri ve üniversite yerleştirme",
+      "Güncel mevzuatı yakından takip ederek başvurularınızın başarı şansını en üst düzeye çıkarıyoruz.",
+    ].join("\n\n"),
+  },
+  {
+    slug: "yazilim-bt-danismanligi",
+    title: "Yazılım & BT Danışmanlığı",
+    icon: "Code2",
+    order: 4,
+    summary: "Dijital dönüşüm, özel yazılım ve süreç otomasyonuyla işinizi teknolojiyle büyütün.",
+    features: [
+      "Dijital dönüşüm stratejisi",
+      "Özel yazılım ve web geliştirme",
+      "Süreç otomasyonu ve entegrasyon",
+      "Veri analitiği ve raporlama",
+      "Bilgi güvenliği ve KVKK uyumu",
+    ].join("\n"),
+    description: [
+      "Teknolojiyi bir maliyet kalemi değil, büyüme kaldıracı olarak konumlandırıyoruz. İşinizi yavaşlatan manuel süreçleri otomatikleştiriyor, verinizi değere dönüştürüyoruz.",
+      "## Çözümlerimiz",
+      "İhtiyaca özel web ve mobil uygulamalardan mevcut sistemlerinizin entegrasyonuna, veri panolarından güvenlik denetimlerine kadar geniş bir yelpazede hizmet veriyoruz.",
+      "## Çalışma biçimimiz",
+      "- Önce iş ihtiyacını, sonra teknolojiyi konuşuruz",
+      "- Çevik (agile) yöntemlerle hızlı ve şeffaf teslimat",
+      "- Devreye alma sonrası bakım ve destek",
+      "Hedefimiz, teknolojinin işinizi gerçekten kolaylaştırdığı sürdürülebilir çözümler kurmak.",
+    ].join("\n\n"),
+  },
+];
+
+const posts = [
+  {
+    slug: "kobiler-icin-5-buyume-stratejisi",
+    title: "KOBİ'ler İçin 5 Sürdürülebilir Büyüme Stratejisi",
+    category: "İş Dünyası",
+    author: "Meridyen Ekibi",
+    excerpt: "Büyümek yalnızca cironun artması değildir. İşte kârlı ve sürdürülebilir büyümenin beş temel sütunu.",
+    content: [
+      "Birçok işletme için büyüme, daha fazla satış demektir. Oysa sürdürülebilir büyüme; kârlılık, nakit akışı, organizasyon ve müşteri memnuniyetinin birlikte yönetildiği çok boyutlu bir süreçtir.",
+      "## 1. Doğru müşteriye odaklanın",
+      "Her müşteri eşit değerde değildir. En kârlı müşteri segmentinizi tanımlayın ve kaynaklarınızı oraya yönlendirin.",
+      "## 2. Süreçlerinizi ölçeklenebilir kılın",
+      "Büyümeden önce süreçlerinizin artan hacmi kaldırabildiğinden emin olun. Aksi halde büyüme, kaosa dönüşür.",
+      "## 3. Nakit akışını yönetin",
+      "Kârlı bir şirket bile nakit yönetimi zayıfsa zorlanır. Büyümeyi finanse edecek sağlam bir nakit planı şarttır.",
+      "## 4. Veriyle karar alın",
+      "Sezgiler değerlidir ama veriyle desteklenmelidir. Doğru metrikleri düzenli takip edin.",
+      "## 5. Ekibinizi geliştirin",
+      "Büyüme, insan kaynağının gelişimiyle mümkündür. Doğru işe alım ve sürekli eğitim yatırımı yapın.",
+      "Bu başlıklarda kuruma özel bir yol haritası için bizimle görüşebilirsiniz.",
+    ].join("\n\n"),
+  },
+  {
+    slug: "2026-vergi-degisiklikleri-isletmelere-etkisi",
+    title: "2026 Vergi Düzenlemeleri İşletmeleri Nasıl Etkiliyor?",
+    category: "Vergi",
+    author: "Meridyen Ekibi",
+    excerpt: "Yeni dönemde dikkat edilmesi gereken vergi başlıkları ve işletmelerin alması gereken önlemler.",
+    content: [
+      "Vergi mevzuatı sürekli değişiyor ve bu değişiklikleri zamanında takip etmeyen işletmeler hem cezai riskle hem de fırsat maliyetiyle karşılaşıyor.",
+      "## Öne çıkan başlıklar",
+      "Düzenlemeler; beyan süreçleri, dijital belge zorunlulukları ve bazı istisnaların kapsamı gibi alanlarda güncellemeler içeriyor. Her işletmenin durumu farklı olduğu için genel geçer yorumlar yerine kuruma özel değerlendirme önemli.",
+      "## Ne yapmalı?",
+      "- Muhasebe ve beyan süreçlerinizi gözden geçirin",
+      "- Dijital dönüşüm gereksinimlerini erken tamamlayın",
+      "- Yıl içinde vergi planlaması yaparak sürprizleri önleyin",
+      "Mali müşavirlik ekibimiz, işletmenize özel etki analizini sizin için hazırlayabilir.",
+    ].join("\n\n"),
+  },
+  {
+    slug: "yurt-disinda-calismak-nereden-baslamali",
+    title: "Yurt Dışında Çalışmak: Nereden Başlamalı?",
+    category: "Göçmenlik",
+    author: "Meridyen Ekibi",
+    excerpt: "Çalışma izni, oturum ve başvuru süreçlerinde doğru adımlarla zaman ve maliyet kazanın.",
+    content: [
+      "Yurt dışında çalışma kararı heyecan verici olduğu kadar süreç yönetimi gerektiren bir yolculuktur. Doğru planlama, hem zaman hem de maliyet açısından büyük fark yaratır.",
+      "## İlk adım: hedef ülke ve program",
+      "Mesleğiniz, eğitiminiz ve bütçeniz hangi ülkeye ve hangi programa uygun? Bu sorunun yanıtı tüm süreci şekillendirir.",
+      "## Belgeler ve başvuru",
+      "- Diploma ve deneyim belgelerinin denkliği",
+      "- Dil yeterlilik belgeleri",
+      "- Başvuru dosyasının eksiksiz hazırlanması",
+      "## Süreç takibi",
+      "Başvuru sonrası takip, çoğu kişinin gözden kaçırdığı kritik aşamadır. Eksik veya geç yanıtlar başvuruyu olumsuz etkileyebilir.",
+      "Profilinize en uygun rotayı belirlemek için ücretsiz ön görüşme talep edebilirsiniz.",
+    ].join("\n\n"),
+  },
+  {
+    slug: "dijital-donusum-kucuk-adimlarla-baslar",
+    title: "Dijital Dönüşüm Küçük Adımlarla Başlar",
+    category: "Teknoloji",
+    author: "Meridyen Ekibi",
+    excerpt: "Dijital dönüşüm için büyük bütçelere gerek yok. Doğru önceliklendirmeyle hızlı kazanımlar mümkün.",
+    content: [
+      "Dijital dönüşüm denince akla büyük projeler ve yüksek bütçeler gelir. Oysa en kalıcı dönüşümler, günlük işleri kolaylaştıran küçük ama doğru adımlarla başlar.",
+      "## Önce darboğazı bulun",
+      "Ekibinizin en çok zaman kaybettiği manuel işi tespit edin. Genellikle en büyük kazanım oradadır.",
+      "## Otomatikleştirin",
+      "Tekrarlayan veri girişi, raporlama ve onay süreçleri otomasyona en uygun alanlardır.",
+      "## Ölçün ve geliştirin",
+      "- Dönüşümün etkisini metriklerle takip edin",
+      "- Çalışan geri bildirimini sürece dahil edin",
+      "- Kazanımları bir sonraki adımı finanse etmek için kullanın",
+      "Nereden başlayacağınızdan emin değilseniz, kısa bir değerlendirme görüşmesiyle size yol haritası çıkarabiliriz.",
+    ].join("\n\n"),
+  },
+];
+
+const team = [
+  { name: "Ahmet Demir", title: "Kurucu & Yönetici Ortak", bio: "20+ yıl yönetim ve strateji deneyimi. Kurumsallaşma ve büyüme projelerinde uzman.", order: 1, email: "ahmet@meridyendanismanlik.com" },
+  { name: "Selin Koç", title: "Mali Müşavir (SMMM)", bio: "Vergi planlaması ve finansal raporlama alanında 15 yıllık tecrübe.", order: 2, email: "selin@meridyendanismanlik.com" },
+  { name: "Emre Aydın", title: "Göçmenlik Danışmanı", bio: "Çalışma, oturum ve yatırım programlarında yüzlerce başarılı başvuru.", order: 3, email: "emre@meridyendanismanlik.com" },
+  { name: "Derya Şahin", title: "BT & Dijital Dönüşüm Lideri", bio: "Özel yazılım ve süreç otomasyonu projelerinde çözüm mimarı.", order: 4, email: "derya@meridyendanismanlik.com" },
+];
+
 async function main() {
-  // ─── Süper Admin (platform sahibi) ───
+  // Admin kullanıcı
+  const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
   await prisma.user.upsert({
-    where: { email: "admin@platform.com" },
+    where: { email: ADMIN_EMAIL },
     update: {},
-    create: {
-      email: "admin@platform.com",
-      passwordHash: await bcrypt.hash("super123", 10),
-      name: "Platform Yöneticisi",
-      role: "SUPER_ADMIN",
-      locale: "tr",
-    },
+    create: { email: ADMIN_EMAIL, name: "Site Yöneticisi", passwordHash, role: "ADMIN" },
   });
 
-  // ─── Demo Firma 1: Prishtina Rent ───
-  const company1 = await prisma.company.upsert({
-    where: { slug: "prishtina-rent" },
-    update: {},
-    create: {
-      name: "Prishtina Rent a Car",
-      slug: "prishtina-rent",
-      primaryColor: "#2563eb",
-      status: "ACTIVE",
-      defaultLocale: "sq",
-      currency: "EUR",
-      contactEmail: "info@prishtinarent.com",
-      contactPhone: "+383 44 123 456",
-      city: "Prishtinë",
-      address: "Rr. Nëna Terezë, Prishtinë",
-    },
-  });
-
-  await prisma.user.upsert({
-    where: { email: "admin@prishtinarent.com" },
-    update: {},
-    create: {
-      email: "admin@prishtinarent.com",
-      passwordHash: await bcrypt.hash("firma123", 10),
-      name: "Arben Krasniqi",
-      role: "COMPANY_ADMIN",
-      locale: "sq",
-      companyId: company1.id,
-    },
-  });
-
-  const loc1 = await prisma.location.create({
-    data: {
-      companyId: company1.id,
-      name: "Aeroporti i Prishtinës (PRN)",
-      city: "Prishtinë",
-      address: "Prishtina International Airport",
-    },
-  });
-  const loc2 = await prisma.location.create({
-    data: {
-      companyId: company1.id,
-      name: "Zyra Qendër",
-      city: "Prishtinë",
-      address: "Rr. Nëna Terezë",
-    },
-  });
-
-  const carsCompany1 = [
-    { make: "Volkswagen", model: "Golf", year: 2022, plate: "01-123-AB", category: "Ekonomik", transmission: "Manuel", fuel: "Dizel", seats: 5, pricePerDay: 35, imageUrl: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800&q=80" },
-    { make: "Škoda", model: "Octavia", year: 2023, plate: "01-234-BC", category: "Orta", transmission: "Otomatik", fuel: "Dizel", seats: 5, pricePerDay: 45, imageUrl: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=80" },
-    { make: "BMW", model: "320d", year: 2024, plate: "01-345-CD", category: "Lüks", transmission: "Otomatik", fuel: "Dizel", seats: 5, pricePerDay: 85, imageUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80" },
-    { make: "Dacia", model: "Duster", year: 2022, plate: "01-456-DE", category: "SUV", transmission: "Manuel", fuel: "Benzin", seats: 5, pricePerDay: 40, imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&q=80" },
-    { make: "Mercedes", model: "Vito", year: 2023, plate: "01-567-EF", category: "Ticari", transmission: "Manuel", fuel: "Dizel", seats: 8, pricePerDay: 70, imageUrl: "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=800&q=80" },
-    { make: "Tesla", model: "Model 3", year: 2024, plate: "01-678-FG", category: "Lüks", transmission: "Otomatik", fuel: "Elektrik", seats: 5, pricePerDay: 95, imageUrl: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&q=80" },
-  ];
-  for (const c of carsCompany1) {
-    await prisma.car.create({ data: { ...c, companyId: company1.id } });
+  for (const s of services) {
+    await prisma.service.upsert({ where: { slug: s.slug }, update: s, create: s });
+  }
+  for (const p of posts) {
+    await prisma.post.upsert({ where: { slug: p.slug }, update: p, create: p });
+  }
+  // Ekip (slug yok → isme göre idempotent)
+  for (const m of team) {
+    const existing = await prisma.teamMember.findFirst({ where: { name: m.name } });
+    if (existing) {
+      await prisma.teamMember.update({ where: { id: existing.id }, data: m });
+    } else {
+      await prisma.teamMember.create({ data: m });
+    }
   }
 
-  // Örnek müşteri + rezervasyon (izolasyon testi için)
-  const cust1 = await prisma.customer.create({
-    data: {
-      companyId: company1.id,
-      name: "Driton Berisha",
-      email: "driton@example.com",
-      phone: "+383 44 555 111",
-      idNumber: "1234567890",
-      licenseNo: "PR-556677",
-    },
-  });
-  const golf = await prisma.car.findFirst({
-    where: { companyId: company1.id, model: "Golf" },
-  });
-  if (golf) {
-    await prisma.reservation.create({
-      data: {
-        companyId: company1.id,
-        carId: golf.id,
-        customerId: cust1.id,
-        pickupLocationId: loc1.id,
-        dropoffLocationId: loc2.id,
-        startDate: new Date("2026-08-20"),
-        endDate: new Date("2026-08-25"),
-        days: 5,
-        totalPrice: 5 * golf.pricePerDay,
-        status: "PENDING",
-        source: "web",
-      },
-    });
-  }
-
-  // ─── Demo Firma 2: Prizren Cars (izolasyon kanıtı) ───
-  const company2 = await prisma.company.upsert({
-    where: { slug: "prizren-cars" },
-    update: {},
-    create: {
-      name: "Prizren Cars",
-      slug: "prizren-cars",
-      primaryColor: "#dc2626",
-      status: "ACTIVE",
-      defaultLocale: "sq",
-      currency: "EUR",
-      contactEmail: "info@prizrencars.com",
-      contactPhone: "+383 49 987 654",
-      city: "Prizren",
-    },
-  });
-  await prisma.user.upsert({
-    where: { email: "admin@prizrencars.com" },
-    update: {},
-    create: {
-      email: "admin@prizrencars.com",
-      passwordHash: await bcrypt.hash("firma123", 10),
-      name: "Blerim Hoxha",
-      role: "COMPANY_ADMIN",
-      locale: "tr",
-      companyId: company2.id,
-    },
-  });
-  await prisma.location.create({
-    data: { companyId: company2.id, name: "Prizren Qendër", city: "Prizren" },
-  });
-  const carsCompany2 = [
-    { make: "Renault", model: "Clio", year: 2021, plate: "02-111-AA", category: "Ekonomik", transmission: "Manuel", fuel: "Benzin", seats: 5, pricePerDay: 30, imageUrl: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&q=80" },
-    { make: "Audi", model: "A4", year: 2023, plate: "02-222-BB", category: "Lüks", transmission: "Otomatik", fuel: "Dizel", seats: 5, pricePerDay: 80, imageUrl: "https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=800&q=80" },
-  ];
-  for (const c of carsCompany2) {
-    await prisma.car.create({ data: { ...c, companyId: company2.id } });
-  }
-
-  // ─── Filo verisi (belge/bakım) — bugüne göreli tarihler ───
-  const DAY = 24 * 60 * 60 * 1000;
-  const rel = (days: number) => new Date(Date.now() + days * DAY);
-  const fleet: Record<string, any> = {
-    Golf: { mileage: 85000, condition: "GOOD", insuranceDate: rel(8), inspectionDate: rel(45), nextServiceDate: rel(20), kaskoDate: rel(120) },
-    Octavia: { mileage: 62000, condition: "EXCELLENT", insuranceDate: rel(120), inspectionDate: rel(-5), nextServiceDate: rel(90) },
-    "320d": { mileage: 44000, condition: "EXCELLENT", insuranceDate: rel(210), inspectionDate: rel(160), kaskoDate: rel(25), nextServiceKm: 45000 },
-    Duster: { mileage: 96000, condition: "FAIR", conditionNote: "Ön tampon çizik", insuranceDate: rel(70), inspectionDate: rel(30), nextServiceDate: rel(-3) },
-    Vito: { mileage: 131000, condition: "GOOD", insuranceDate: rel(15), inspectionDate: rel(200), nextServiceDate: rel(60) },
-    "Model 3": { mileage: 21000, condition: "EXCELLENT", insuranceDate: rel(300), inspectionDate: rel(280), nextServiceDate: rel(150) },
-    Clio: { mileage: 78000, condition: "GOOD", insuranceDate: rel(40), inspectionDate: rel(9), nextServiceDate: rel(50) },
-    A4: { mileage: 55000, condition: "EXCELLENT", insuranceDate: rel(180), inspectionDate: rel(150), kaskoDate: rel(6) },
-  };
-  for (const [model, data] of Object.entries(fleet)) {
-    const car = await prisma.car.findFirst({ where: { model } });
-    if (car) await prisma.car.update({ where: { id: car.id }, data });
-  }
-
-  console.log("✔ Seed tamamlandı.");
-  console.log("─────────────────────────────────────────────");
-  console.log("SÜPER ADMIN:     admin@platform.com / super123");
-  console.log("FİRMA 1 ADMIN:   admin@prishtinarent.com / firma123  (/s/prishtina-rent)");
-  console.log("FİRMA 2 ADMIN:   admin@prizrencars.com / firma123    (/s/prizren-cars)");
+  console.log(`✅ Seed tamam. Admin girişi: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`);
 }
 
 main()
@@ -178,6 +224,4 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .finally(() => prisma.$disconnect());

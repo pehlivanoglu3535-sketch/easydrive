@@ -1,96 +1,97 @@
 import Link from "next/link";
-import { Building2, CheckCircle2, Car, CalendarCheck, Plus, ExternalLink, ChevronRight } from "lucide-react";
+import { MessageSquare, Calendar, Newspaper, Briefcase, ArrowRight } from "lucide-react";
 import { prisma } from "@/lib/db";
-import { formatDate, COMPANY_STATUS_TR } from "@/lib/utils";
-import { StatCard } from "@/components/StatCard";
-
-const STATUS_STYLE: Record<string, string> = {
-  TRIAL: "bg-amber-50 text-amber-700 ring-amber-600/20",
-  ACTIVE: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-  SUSPENDED: "bg-red-50 text-red-700 ring-red-600/20",
-};
+import { getSession } from "@/lib/auth";
+import { formatDateTime, formatRelativeShort } from "@/lib/utils";
 
 export default async function AdminDashboard() {
-  const companies = await prisma.company.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { _count: { select: { cars: true, reservations: true, users: true } } },
-  });
+  const session = await getSession();
+  const now = new Date();
 
-  const totals = {
-    companies: companies.length,
-    active: companies.filter((c) => c.status === "ACTIVE").length,
-    cars: companies.reduce((s, c) => s + c._count.cars, 0),
-    reservations: companies.reduce((s, c) => s + c._count.reservations, 0),
-  };
+  const [newMessages, pendingAppts, postCount, serviceCount, recentMessages, upcoming] = await Promise.all([
+    prisma.contactMessage.count({ where: { status: "NEW" } }),
+    prisma.appointment.count({ where: { status: "PENDING" } }),
+    prisma.post.count(),
+    prisma.service.count(),
+    prisma.contactMessage.findMany({ orderBy: { createdAt: "desc" }, take: 5, include: { service: true } }),
+    prisma.appointment.findMany({
+      where: { slot: { gte: now }, status: { in: ["PENDING", "CONFIRMED"] } },
+      orderBy: { slot: "asc" },
+      take: 5,
+    }),
+  ]);
+
+  const stats = [
+    { label: "Yeni mesaj", value: newMessages, icon: MessageSquare, href: "/admin/mesajlar" },
+    { label: "Bekleyen randevu", value: pendingAppts, icon: Calendar, href: "/admin/randevular" },
+    { label: "Blog yazısı", value: postCount, icon: Newspaper, href: "/admin/yazilar" },
+    { label: "Hizmet", value: serviceCount, icon: Briefcase, href: "/admin/hizmetler" },
+  ];
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Firmalar</h1>
-          <p className="mt-1 text-sm text-slate-500">Platform geneli müşteri firmalarını yönetin.</p>
-        </div>
-        <Link href="/admin/companies/new" className="btn-primary"><Plus size={16} /> Yeni Firma</Link>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Merhaba, {session?.name?.split(" ")[0]} 👋</h1>
+        <p className="mt-1 text-slate-500">Sitenizin güncel durumuna hızlı bir bakış.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Toplam Firma" value={totals.companies} icon={Building2} tone="brand" />
-        <StatCard label="Aktif Abone" value={totals.active} icon={CheckCircle2} tone="emerald" />
-        <StatCard label="Toplam Araç" value={totals.cars} icon={Car} tone="indigo" />
-        <StatCard label="Toplam Rezervasyon" value={totals.reservations} icon={CalendarCheck} tone="amber" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((s) => (
+          <Link key={s.label} href={s.href} className="card card-hover p-5">
+            <div className="flex items-center justify-between">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700"><s.icon size={20} /></div>
+              <ArrowRight size={16} className="text-slate-300" />
+            </div>
+            <div className="mt-4 text-3xl font-bold">{s.value}</div>
+            <div className="text-sm text-slate-500">{s.label}</div>
+          </Link>
+        ))}
       </div>
 
-      <div className="card overflow-hidden">
-        <div className="border-b px-5 py-4"><h2 className="font-semibold">Tüm Firmalar</h2></div>
-        {companies.length === 0 ? (
-          <p className="px-5 py-12 text-center text-sm text-slate-400">Henüz firma yok.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="table-head">
-                  <th className="px-5 py-3">Firma</th>
-                  <th className="px-5 py-3">Site Adresi</th>
-                  <th className="px-5 py-3">Şehir</th>
-                  <th className="px-5 py-3">Araç</th>
-                  <th className="px-5 py-3">Rez.</th>
-                  <th className="px-5 py-3">Durum</th>
-                  <th className="px-5 py-3">Kayıt</th>
-                  <th className="px-5 py-3 text-right">İşlem</th>
-                </tr>
-              </thead>
-              <tbody>
-                {companies.map((c) => (
-                  <tr key={c.id} className="table-row">
-                    <td className="px-5 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold text-white" style={{ backgroundColor: c.primaryColor }}>
-                          {c.name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase()}
-                        </div>
-                        <span className="font-medium text-slate-900">{c.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3">
-                      <Link href={`/s/${c.slug}`} target="_blank" className="inline-flex items-center gap-1 font-mono text-xs text-indigo-600 hover:underline">
-                        /s/{c.slug} <ExternalLink size={12} />
-                      </Link>
-                    </td>
-                    <td className="px-5 py-3 text-slate-600">{c.city}</td>
-                    <td className="px-5 py-3 text-slate-600">{c._count.cars}</td>
-                    <td className="px-5 py-3 text-slate-600">{c._count.reservations}</td>
-                    <td className="px-5 py-3"><span className={`badge ${STATUS_STYLE[c.status]}`}>{COMPANY_STATUS_TR[c.status]}</span></td>
-                    <td className="px-5 py-3 text-slate-500">{formatDate(c.createdAt, "tr")}</td>
-                    <td className="px-5 py-3 text-right">
-                      <Link href={`/admin/companies/${c.id}`} className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100">
-                        Yönet <ChevronRight size={15} />
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="card">
+          <div className="flex items-center justify-between border-b p-5">
+            <h2 className="font-semibold">Son mesajlar</h2>
+            <Link href="/admin/mesajlar" className="text-sm font-medium text-brand-700">Tümü</Link>
           </div>
-        )}
+          <div className="divide-y">
+            {recentMessages.length === 0 && <p className="p-5 text-sm text-slate-400">Henüz mesaj yok.</p>}
+            {recentMessages.map((m) => (
+              <Link key={m.id} href="/admin/mesajlar" className="flex items-start justify-between gap-3 p-4 hover:bg-slate-50">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-slate-900">{m.name}</span>
+                    {m.kind === "quote" && <span className="badge bg-accent-50 text-accent-600 ring-accent/30">Teklif</span>}
+                    {m.status === "NEW" && <span className="h-2 w-2 rounded-full bg-accent" />}
+                  </div>
+                  <p className="mt-0.5 truncate text-sm text-slate-500">{m.subject || m.message}</p>
+                </div>
+                <span className="shrink-0 text-xs text-slate-400">{formatRelativeShort(m.createdAt)}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="flex items-center justify-between border-b p-5">
+            <h2 className="font-semibold">Yaklaşan randevular</h2>
+            <Link href="/admin/randevular" className="text-sm font-medium text-brand-700">Tümü</Link>
+          </div>
+          <div className="divide-y">
+            {upcoming.length === 0 && <p className="p-5 text-sm text-slate-400">Yaklaşan randevu yok.</p>}
+            {upcoming.map((a) => (
+              <div key={a.id} className="flex items-center justify-between gap-3 p-4">
+                <div className="min-w-0">
+                  <div className="font-medium text-slate-900">{a.name}</div>
+                  <div className="truncate text-sm text-slate-500">{formatDateTime(a.slot)}</div>
+                </div>
+                <span className={`badge ${a.status === "CONFIRMED" ? "bg-emerald-50 text-emerald-700 ring-emerald-200" : "bg-amber-50 text-amber-700 ring-amber-200"}`}>
+                  {a.status === "CONFIRMED" ? "Onaylı" : "Bekliyor"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

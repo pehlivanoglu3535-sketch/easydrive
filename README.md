@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Meridyen Danışmanlık — Kurumsal Web Sitesi
 
-## Getting Started
+Çok disiplinli bir danışmanlık şirketi için tanıtım sitesi + yönetim paneli.
+İş & yönetim, mali müşavirlik, göçmenlik ve yazılım danışmanlığı hizmetlerini
+tanıtır; ziyaretçilerden iletişim/teklif talebi ve online randevu toplar.
 
-First, run the development server:
+**Teknolojiler:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Prisma (SQLite) · jose + bcrypt (oturum)
+
+## Özellikler
+
+- **Tanıtım sayfaları:** Ana sayfa, Hizmetler (liste + detay), Hakkımızda (ekip), Blog (liste + detay), İletişim.
+- **İletişim / teklif formu:** Doğrulama + bot koruması; talepler panele düşer.
+- **Online randevu:** İş günlerine göre otomatik boş saat üretimi, çift rezervasyon engeli.
+- **Blog / makaleler:** Panelden yazı ekleme/düzenleme/yayınlama.
+- **Yönetim paneli (`/admin`):** Mesajlar, randevular, blog yazıları ve hizmet içeriklerinin yönetimi.
+
+## Hızlı başlangıç
 
 ```bash
+# 1) Bağımlılıklar
+npm install
+
+# 2) Ortam değişkenleri
+cp .env.example .env
+
+# 3) Veritabanı + örnek içerik (hizmetler, blog, ekip, admin kullanıcı)
+npx prisma migrate dev
+npm run seed
+
+# 4) Geliştirme sunucusu
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Site: http://localhost:3000 — Panel: http://localhost:3000/admin
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Varsayılan yönetici girişi:** `admin@meridyendanismanlik.com` / `admin1234`
+(`.env` içinden `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` ile değiştirilebilir.)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Yapı
 
-## Learn More
+```
+src/
+  app/
+    (site)/            # herkese açık site (ortak header/footer layout)
+      page.tsx         # ana sayfa
+      hizmetler/       # hizmet liste + [slug] detay
+      hakkimizda/      # hakkımızda + ekip
+      blog/            # blog liste + [slug] detay
+      iletisim/        # iletişim / teklif formu
+      randevu/         # online randevu
+    admin/             # yönetim paneli (oturum korumalı)
+    login/             # yönetici girişi
+  components/          # Logo, SiteHeader/Footer, formlar, ServiceIcon, RichText…
+  lib/
+    site-config.ts     # marka adı, iletişim bilgileri, menü (tek düzenleme noktası)
+    actions/           # server action'lar (contact, appointment, auth, admin)
+    appointments.ts    # randevu slot üretimi
+prisma/schema.prisma   # veri modeli
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Özelleştirme
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Marka / iletişim bilgileri:** `src/lib/site-config.ts`
+- **Renk teması:** `src/app/globals.css` (`:root` içindeki `--brand*` / `--accent*` değişkenleri)
+- **Hizmet ve blog içeriği:** Yönetim panelinden veya `prisma/seed.ts` üzerinden
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> Not: Markayı değiştirmek için `site-config.ts` yeterlidir; logo `src/components/Logo.tsx` içindeki SVG'dir.

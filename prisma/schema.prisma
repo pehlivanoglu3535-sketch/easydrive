@@ -1,398 +1,134 @@
-// Kosova pazarı için çok-kiracılı (multi-tenant) araç kiralama SaaS
+// Meridyen Danışmanlık — kurumsal danışmanlık web sitesi veri modeli
 generator client {
   provider = "prisma-client-js"
-  // native = yerel geliştirme (Windows); debian = Docker imajı (node:slim).
+  // native = yerel geliştirme; debian = Docker imajı (node:slim).
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
-  // Yerel geliştirme: SQLite. Docker/production: bu satır "postgresql" olur
-  // (scripts/use-postgres.mjs, Docker derlemesinde otomatik uygular — bkz. DEPLOY.md).
+  // Yerel geliştirme: SQLite. Production'da bu satır "postgresql" olabilir.
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-// ─────────────────────────── Roller & Durumlar ───────────────────────────
+// ─────────────────────────── Durumlar ───────────────────────────
 
 enum Role {
-  SUPER_ADMIN // platform sahibi (sen) — tüm firmaları yönetir
-  COMPANY_ADMIN // firma sahibi/yöneticisi
-  STAFF // ofis personeli (rezervasyon, sözleşme, güncelleme — tam yetki)
-  HANDOVER // araç teslim personeli (yalnızca teslim/iade kontrol formu)
-  CUSTOMER // firmanın müşterisi (rezervasyon yapan)
+  ADMIN // site yöneticisi
+  EDITOR // içerik editörü (blog/hizmet)
 }
 
-enum InspectionKind {
-  PICKUP // teslim (araç müşteriye verilirken)
-  RETURN // iade (araç geri alınırken)
+enum MessageStatus {
+  NEW // yeni gelen
+  READ // okundu
+  REPLIED // yanıtlandı
+  ARCHIVED // arşivlendi
 }
 
-enum CompanyStatus {
-  TRIAL // deneme sürümü
-  ACTIVE // aktif abone
-  SUSPENDED // askıya alınmış (ödeme yok vb.)
+enum AppointmentStatus {
+  PENDING // talep alındı
+  CONFIRMED // onaylandı
+  CANCELLED // iptal
+  COMPLETED // tamamlandı
 }
 
-enum Locale {
-  sq // Arnavutça (Shqip)
-  en // İngilizce
-  sr // Sırpça
-  tr // Türkçe
-}
-
-enum CarStatus {
-  AVAILABLE
-  MAINTENANCE
-  RETIRED
-}
-
-enum CarCondition {
-  EXCELLENT // Mükemmel
-  GOOD // İyi
-  FAIR // Orta
-  POOR // Kötü
-}
-
-enum ReservationStatus {
-  PENDING
-  CONFIRMED
-  ACTIVE
-  COMPLETED
-  CANCELLED
-}
-
-enum RentalType {
-  DAILY // günlük
-  MONTHLY // uzun dönem (aylık)
-}
-
-enum PaymentStatus {
-  UNPAID // ödenmedi
-  PARTIAL // kısmi
-  PAID // ödendi
-}
-
-enum PricingKind {
-  PERCENT // yüzde (+/-)
-  ABSOLUTE // sabit günlük fiyat (override)
-}
-
-enum SubscriptionPlan {
-  TRIAL
-  BASIC
-  PRO
-  ENTERPRISE
-}
-
-enum InvoiceStatus {
-  UNPAID
-  PAID
-}
-
-// ─────────────────────────── Kiracı (Firma) ───────────────────────────
-
-model Company {
-  id            String        @id @default(cuid())
-  name          String
-  slug          String        @unique // markalı site adresi: /s/<slug>
-  customDomain  String?       @unique // firmanın kendi domaini (ör. rezervasyon.mararent.com) → markalı site
-  logoUrl       String?
-  primaryColor  String        @default("#2563eb")
-  status        CompanyStatus @default(TRIAL)
-  defaultLocale Locale        @default(sq)
-  currency      String        @default("EUR")
-
-  // İletişim / künye
-  contactEmail  String?
-  contactPhone  String?
-  address       String?
-  city          String        @default("Prishtinë")
-  taxId         String? // NUI / fiscal number (Kosova)
-
-  // Web & sosyal hesaplar
-  website       String?
-  instagram     String?
-  facebook      String?
-  whatsapp      String?
-
-  // Abonelik
-  plan            SubscriptionPlan @default(TRIAL)
-  planPriceMonthly Float           @default(0)
-  trialEndsAt     DateTime?
-  notes           String?
-
-  users         User[]
-  cars          Car[]
-  reservations  Reservation[]
-  customers     Customer[]
-  locations     Location[]
-  branches      Branch[]
-  pricingRules  PricingRule[]
-  invoices      Invoice[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-}
-
-// ─────────────────────────── Şube ───────────────────────────
-
-model Branch {
-  id           String        @id @default(cuid())
-  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId    String
-  name         String // "Prishtina Havalimanı Şubesi"
-  city         String
-  address      String?
-  phone        String?
-  cars                Car[]
-  users               User[]
-  reservations        Reservation[] @relation("ResBranch")
-  pickupReservations  Reservation[] @relation("PickupBranch")
-  dropoffReservations Reservation[] @relation("DropoffBranch")
-  createdAt           DateTime      @default(now())
-
-  @@index([companyId])
-}
-
-// ─────────────────────────── Kullanıcılar ───────────────────────────
-// Personel/yönetici hesapları (SUPER_ADMIN, COMPANY_ADMIN, STAFF)
+// ─────────────────────────── Yönetici kullanıcılar ───────────────────────────
 
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
   passwordHash String
   name         String
-  phone        String?
-  role         Role     @default(STAFF)
-  locale       Locale   @default(sq)
-
-  // SUPER_ADMIN için null; diğerleri bir firmaya bağlı
-  company      Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId    String?
-
-  // Personelin bağlı olduğu şube (null = tüm şubeler / merkez)
-  branch       Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
-  branchId     String?
-
-  inspections  Inspection[]
+  role         Role     @default(ADMIN)
   createdAt    DateTime @default(now())
-
-  @@index([companyId])
 }
 
-// ─────────────────────────── Müşteriler ───────────────────────────
-// Rezervasyon yapan kişiler — her firmaya özel (izole)
+// ─────────────────────────── Hizmetler ───────────────────────────
 
-model Customer {
-  id         String        @id @default(cuid())
-  company    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId  String
-  name       String
-  email      String
-  phone      String?
-  // Kiralama için kimlik bilgileri
-  idNumber   String? // pasaport / kimlik no
-  licenseNo  String? // ehliyet no
-  // Online müşteri girişi için (opsiyonel)
-  passwordHash String?
+model Service {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  summary     String // kısa açıklama (kart/liste)
+  description String // uzun açıklama (detay sayfası, paragraflar \n\n ile)
+  icon        String   @default("Briefcase") // lucide ikon adı
+  features    String   @default("") // satır başı (\n) ile ayrılmış maddeler
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  reservations Reservation[]
-  createdAt  DateTime      @default(now())
-
-  @@unique([companyId, email])
-  @@index([companyId])
+  messages     ContactMessage[]
+  appointments Appointment[]
 }
 
-// ─────────────────────────── Lokasyonlar (şube/teslim noktası) ───────────
+// ─────────────────────────── Blog / Makaleler ───────────────────────────
 
-model Location {
+model Post {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  excerpt     String // özet
+  content     String // gövde (paragraflar \n\n ile; "## " ile alt başlık)
+  coverImage  String?
+  author      String    @default("Meridyen Ekibi")
+  category    String? // "İş Dünyası", "Vergi", "Göçmenlik", "Teknoloji"
+  published   Boolean   @default(true)
+  publishedAt DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ─────────────────────────── Ekip ───────────────────────────
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  name      String
+  title     String // ünvan
+  bio       String?
+  photo     String?
+  email     String?
+  linkedin  String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+// ─────────────────────────── İletişim / Teklif mesajları ───────────────────────────
+
+model ContactMessage {
   id        String        @id @default(cuid())
-  company   Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId String
-  name      String // "Prishtina Havalimanı", "Prizren Ofis"
-  city      String
-  address   String?
-
-  pickups   Reservation[] @relation("PickupLocation")
-  dropoffs  Reservation[] @relation("DropoffLocation")
+  name      String
+  email     String
+  phone     String?
+  company   String? // başvuranın firması
+  subject   String?
+  message   String
+  // Hangi hizmetle ilgili (opsiyonel)
+  service   Service?      @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceId String?
+  kind      String        @default("contact") // contact | quote (teklif)
+  status    MessageStatus @default(NEW)
   createdAt DateTime      @default(now())
 
-  @@index([companyId])
+  @@index([status])
 }
 
-// ─────────────────────────── Araçlar ───────────────────────────
+// ─────────────────────────── Randevular ───────────────────────────
 
-model Car {
-  id           String        @id @default(cuid())
-  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId    String
+model Appointment {
+  id        String            @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  service   Service?          @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceId String?
+  // Seçilen tarih + saat (tek alan; slot başlangıcı)
+  slot      DateTime
+  note      String?
+  status    AppointmentStatus @default(PENDING)
+  createdAt DateTime          @default(now())
 
-  branch       Branch?       @relation(fields: [branchId], references: [id], onDelete: SetNull)
-  branchId     String?
-
-  make         String
-  model        String
-  year         Int
-  plate        String
-  category     String
-  transmission String
-  fuel         String
-  seats        Int
-  pricePerDay  Float // Euro (günlük)
-  monthlyPrice Float? // Euro (uzun dönem / aylık)
-  imageUrl     String?
-  status       CarStatus     @default(AVAILABLE)
-
-  // Filo yönetimi — belgeler, bakım, durum
-  mileage        Int           @default(0) // güncel kilometre
-  condition      CarCondition  @default(GOOD)
-  conditionNote  String? // hasar/durum notu
-  inspectionDate DateTime? // muayene son geçerlilik
-  insuranceDate  DateTime? // trafik sigortası bitiş
-  kaskoDate      DateTime? // kasko bitiş
-  nextServiceDate DateTime? // bir sonraki bakım tarihi
-  nextServiceKm  Int? // bir sonraki bakım kilometresi
-
-  reservations Reservation[]
-  createdAt    DateTime      @default(now())
-
-  @@unique([companyId, plate])
-  @@index([companyId])
-}
-
-// ─────────────────────────── Rezervasyonlar ───────────────────────────
-
-model Reservation {
-  id         String            @id @default(cuid())
-  company    Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId  String
-
-  car        Car               @relation(fields: [carId], references: [id])
-  carId      String
-  customer   Customer          @relation(fields: [customerId], references: [id])
-  customerId String
-  // Operasyonel sahip şube (alışta = araç şubesi)
-  branch     Branch?           @relation("ResBranch", fields: [branchId], references: [id], onDelete: SetNull)
-  branchId   String?
-  // Alış / teslim şubesi (tek yön kiralama; iade edildiğinde araç teslim şubesine aktarılır)
-  pickupBranch    Branch?      @relation("PickupBranch", fields: [pickupBranchId], references: [id], onDelete: SetNull)
-  pickupBranchId  String?
-  dropoffBranch   Branch?      @relation("DropoffBranch", fields: [dropoffBranchId], references: [id], onDelete: SetNull)
-  dropoffBranchId String?
-
-  pickupLocation   Location?    @relation("PickupLocation", fields: [pickupLocationId], references: [id])
-  pickupLocationId String?
-  dropoffLocation  Location?    @relation("DropoffLocation", fields: [dropoffLocationId], references: [id])
-  dropoffLocationId String?
-
-  startDate  DateTime
-  endDate    DateTime
-  days       Int
-  totalPrice Float // Euro
-  status     ReservationStatus @default(PENDING)
-  rentalType RentalType        @default(DAILY)
-  paymentStatus PaymentStatus  @default(UNPAID)
-  paidAmount Float             @default(0)
-  note       String?
-  source     String            @default("web") // web | panel
-
-  contract    Contract?
-  inspections Inspection[]
-  createdAt   DateTime          @default(now())
-
-  @@index([companyId])
-  @@index([carId])
-  @@index([customerId])
-}
-
-// ─────────────────────────── Kira Sözleşmesi ───────────────────────────
-
-model Contract {
-  id            String      @id @default(cuid())
-  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
-  reservationId String      @unique
-  contractNo    String      @unique
-  startMileage  Int?
-  endMileage    Int?
-  fuelLevelOut  String?
-  fuelLevelIn   String?
-  depositAmount Float?
-  signedAt      DateTime?
-
-  // Ek sürücü
-  extraDriverName    String?
-  extraDriverLicense String?
-  // Güvence / sigorta paketi
-  insurancePackage   String? // "Tam Kasko", "Mini Hasar", "Yok"
-  insuranceFee       Float?
-  // Ek hizmetler (bebek koltuğu, navigasyon, ek sürücü vb.)
-  extras             String? // serbest metin / virgülle
-  extrasFee          Float?
-  // Hasar / durum
-  damageNote         String?
-  damagePhotoUrl     String?
-
-  createdAt     DateTime    @default(now())
-}
-
-// ─────────────────────────── Araç Teslim / İade Kontrolü ───────────────────────────
-
-model Inspection {
-  id            String         @id @default(cuid())
-  reservation   Reservation    @relation(fields: [reservationId], references: [id], onDelete: Cascade)
-  reservationId String
-  kind          InspectionKind
-  staff         User?          @relation(fields: [staffId], references: [id], onDelete: SetNull)
-  staffId       String?
-
-  mileage    Int?
-  fuelLevel  String?
-  damageNote String?
-
-  // Fotoğraflar (dış: ön/arka/sol/sağ, iç: ön/arka)
-  photoFront         String?
-  photoBack          String?
-  photoLeft          String?
-  photoRight         String?
-  photoInteriorFront String?
-  photoInteriorBack  String?
-
-  // Dijital imza (data URL / base64)
-  signatureUrl String?
-
-  createdAt DateTime @default(now())
-
-  @@index([reservationId])
-}
-
-// ─────────────────────────── Fiyat & Sezon Kuralları ───────────────────────────
-
-model PricingRule {
-  id        String      @id @default(cuid())
-  company   Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId String
-  name      String // "Yaz Sezonu", "Yılbaşı" vb.
-  startDate DateTime
-  endDate   DateTime
-  category  String? // null = tüm kategoriler
-  kind      PricingKind @default(PERCENT)
-  value     Float // PERCENT: +30 => %30 zam; ABSOLUTE: günlük sabit fiyat
-  priority  Int         @default(0) // yüksek olan önce uygulanır
-  createdAt DateTime    @default(now())
-
-  @@index([companyId])
-}
-
-// ─────────────────────────── Abonelik Faturaları (Süper-Admin) ───────────────────────────
-
-model Invoice {
-  id        String        @id @default(cuid())
-  company   Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId String
-  period    String // "2026-08" gibi
-  amount    Float
-  status    InvoiceStatus @default(UNPAID)
-  issuedAt  DateTime      @default(now())
-  paidAt    DateTime?
-
-  @@index([companyId])
+  // Çift rezervasyon uygulama seviyesinde engellenir (iptal edilen slot tekrar açılabilsin).
+  @@index([slot])
+  @@index([status])
 }

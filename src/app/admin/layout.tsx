@@ -1,38 +1,31 @@
-import Link from "next/link";
-import { requireSuperAdmin } from "@/lib/auth";
-import { LogoutButton } from "@/components/LogoutButton";
+import type { Metadata } from "next";
+import { requireAdmin } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import { AdminNav } from "@/components/admin/AdminNav";
 
-export default async function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const session = await requireSuperAdmin();
+export const metadata: Metadata = {
+  title: "Yönetim Paneli",
+  robots: { index: false },
+};
+
+export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
+  await requireAdmin();
+
+  const [messages, appointments] = await Promise.all([
+    prisma.contactMessage.count({ where: { status: "NEW" } }),
+    prisma.appointment.count({ where: { status: "PENDING" } }),
+  ]);
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <header className="sticky top-0 z-30 border-b bg-white">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
-          <Link href="/admin" className="flex items-center gap-2.5">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="EasyDrive" className="h-8 w-8 object-contain" />
-            <div className="leading-tight">
-              <div className="text-sm font-semibold">EasyDrive</div>
-              <div className="text-xs text-slate-400">Platform Yönetimi</div>
-            </div>
-          </Link>
-          <div className="flex items-center gap-3">
-            <div className="hidden items-center gap-2 sm:flex">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
-                {session.name.slice(0, 1).toUpperCase()}
-              </div>
-              <span className="text-sm font-medium text-slate-700">{session.name}</span>
-            </div>
-            <LogoutButton className="btn-outline btn-sm" />
-          </div>
-        </div>
-      </header>
-      <main className="mx-auto max-w-6xl px-4 py-8 md:px-6">{children}</main>
+    <div className="min-h-screen bg-slate-50 lg:grid lg:grid-cols-[260px_1fr]">
+      <aside className="sticky top-0 hidden h-screen border-r bg-white lg:block">
+        <AdminNav badges={{ messages, appointments }} />
+      </aside>
+      {/* Mobil üst bar */}
+      <div className="border-b bg-white lg:hidden">
+        <AdminNav badges={{ messages, appointments }} />
+      </div>
+      <main className="min-w-0 p-5 sm:p-8">{children}</main>
     </div>
   );
 }

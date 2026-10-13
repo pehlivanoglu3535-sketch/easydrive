@@ -1,38 +1,30 @@
-// Production bootstrap: yalnızca SÜPER ADMIN kullanıcısını oluşturur (demo firma YOK).
+// Production admin bootstrap: tek bir yönetici (ADMIN) kullanıcısı oluşturur.
 // Düz node ile çalışır (tsx gerekmez) — @prisma/client ve bcryptjs prod bağımlılıkları.
-// Env: SUPER_ADMIN_EMAIL, SUPER_ADMIN_PASSWORD, (ops.) SUPER_ADMIN_NAME.
-// İdempotent: kullanıcı varsa şifresini GÜNCELLEMEZ, sadece bilgi verir.
+// Env: ADMIN_EMAIL, ADMIN_PASSWORD, (ops.) ADMIN_NAME.
+// İdempotent: kullanıcı varsa şifresini GÜNCELLEMEZ, yalnızca bilgi verir.
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+const email = (process.env.ADMIN_EMAIL || process.env.SEED_ADMIN_EMAIL || "").trim().toLowerCase();
+const password = process.env.ADMIN_PASSWORD || process.env.SEED_ADMIN_PASSWORD || "";
+const name = process.env.ADMIN_NAME || "Site Yöneticisi";
 
-const email = process.env.SUPER_ADMIN_EMAIL;
-const password = process.env.SUPER_ADMIN_PASSWORD;
-const name = process.env.SUPER_ADMIN_NAME || "Platform Yöneticisi";
-
-async function main() {
-  if (!email || !password) {
-    console.log("[create-admin] SUPER_ADMIN_EMAIL / SUPER_ADMIN_PASSWORD yok — atlanıyor.");
-    return;
-  }
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
-    console.log(`[create-admin] '${email}' zaten mevcut — değişiklik yok.`);
-    return;
-  }
-  await prisma.user.create({
-    data: {
-      email,
-      passwordHash: await bcrypt.hash(password, 10),
-      name,
-      role: "SUPER_ADMIN",
-      locale: "tr",
-    },
-  });
-  console.log(`[create-admin] Süper admin oluşturuldu: ${email}`);
+if (!email || !password) {
+  console.log("[create-admin] ADMIN_EMAIL / ADMIN_PASSWORD verilmedi, atlanıyor.");
+  process.exit(0);
 }
 
-main()
-  .catch((e) => { console.error(e); process.exit(1); })
-  .finally(() => prisma.$disconnect());
+const prisma = new PrismaClient();
+
+try {
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    console.log(`[create-admin] Kullanıcı zaten var: ${email} (değişiklik yapılmadı).`);
+  } else {
+    const passwordHash = await bcrypt.hash(password, 10);
+    await prisma.user.create({ data: { email, name, passwordHash, role: "ADMIN" } });
+    console.log(`[create-admin] Yönetici oluşturuldu: ${email}`);
+  }
+} finally {
+  await prisma.$disconnect();
+}

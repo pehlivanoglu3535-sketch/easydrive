@@ -3,14 +3,12 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
-import { prisma } from "./db";
-import type { Role, Locale } from "@prisma/client";
+import type { Role } from "@prisma/client";
 
-const COOKIE_NAME = "rentacar_session";
+const COOKIE_NAME = "meridyen_session";
 
-// Oturum imzalama anahtarı — tembel (ilk KULLANIMDA) hesaplanır, modül yüklenirken değil.
-// Böylece derleme (next build) sırasında env yokken hata vermez; production'da eksikse
-// ilk istekte net bir hata verir.
+// Oturum imzalama anahtarı — tembel (ilk kullanımda) hesaplanır, modül yüklenirken değil.
+// Böylece build sırasında env yokken hata vermez; production'da eksikse ilk istekte net hata verir.
 let _secret: Uint8Array | null = null;
 function secretKey(): Uint8Array {
   if (_secret) return _secret;
@@ -31,11 +29,8 @@ function secretKey(): Uint8Array {
 export type SessionPayload = {
   userId: string;
   role: Role;
-  companyId: string | null; // SUPER_ADMIN için null
-  branchId?: string | null; // personelin bağlı olduğu şube (null = tüm şubeler)
   name: string;
   email: string;
-  locale: Locale;
 };
 
 export async function hashPassword(password: string) {
@@ -80,67 +75,11 @@ export async function getSession(): Promise<SessionPayload | null> {
   }
 }
 
-export async function getCurrentUser() {
-  const session = await getSession();
-  if (!session) return null;
-  return prisma.user.findUnique({
-    where: { id: session.userId },
-    include: { company: true },
-  });
-}
-
 /** Oturum yoksa /login'e yönlendirir. */
-export async function requireSession(): Promise<SessionPayload> {
+export async function requireAdmin(): Promise<SessionPayload> {
   const session = await getSession();
   if (!session) redirect("/login");
   return session;
-}
-
-/** Sadece SUPER_ADMIN erişebilir. */
-export async function requireSuperAdmin(): Promise<SessionPayload> {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  if (session.role !== "SUPER_ADMIN") redirect("/panel");
-  return session;
-}
-
-/**
- * Firma kullanıcısı (COMPANY_ADMIN veya STAFF) gerektirir.
- * companyId garanti edilir (asla null olmaz).
- */
-export async function requireCompany(): Promise<
-  SessionPayload & { companyId: string }
-> {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  if (session.role === "SUPER_ADMIN") redirect("/admin");
-  if (!session.companyId) redirect("/login");
-  return session as SessionPayload & { companyId: string };
-}
-
-/** Sadece COMPANY_ADMIN (firma sahibi) erişimi. */
-export async function requireCompanyAdmin(): Promise<
-  SessionPayload & { companyId: string }
-> {
-  const session = await requireCompany();
-  if (session.role !== "COMPANY_ADMIN") redirect("/panel");
-  return session;
-}
-
-/**
- * Ofis yetkisi: COMPANY_ADMIN veya STAFF. Araç teslim personeli (HANDOVER)
- * ofis işlemlerine erişemez → teslim kuyruğuna yönlendirilir.
- */
-export async function requireOffice(): Promise<
-  SessionPayload & { companyId: string }
-> {
-  const session = await requireCompany();
-  if (session.role === "HANDOVER") redirect("/panel/handover");
-  return session;
-}
-
-export function isHandover(session: { role: Role }): boolean {
-  return session.role === "HANDOVER";
 }
 
 export { COOKIE_NAME };

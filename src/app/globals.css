@@ -2,28 +2,37 @@
 
 :root {
   /* Yüzeyler */
-  --background: #f6f7f9;
+  --background: #ffffff;
   --surface: #ffffff;
-  --foreground: #0b1220;
-  --muted: #667085;
+  --foreground: #0b1324;
+  --muted: #5b6b85;
 
-  /* Marka (uygulama iç arayüzü) — EasyDrive logosuna uygun mavi + turuncu vurgu */
-  --brand: #1d4ed8;
-  --brand-600: #1d4ed8;
-  --brand-700: #1e3a8a;
-  --brand-50: #eff4ff;
-  --accent: #f97316;
-  --accent-600: #ea6a0c;
+  /* Marka — kurumsal lacivert + altın vurgu (danışmanlık) */
+  --brand: #16305c;
+  --brand-600: #1b3d73;
+  --brand-700: #112445;
+  --brand-50: #eef3fa;
+  --brand-100: #d9e4f3;
+  --accent: #c0922e;
+  --accent-600: #a67d22;
+  --accent-50: #faf4e6;
 
   /* Kenarlık & gölge */
-  --border: #e6e8ec;
-  --ring: rgba(29, 78, 216, 0.18);
+  --border: #e4e8ef;
+  --ring: rgba(22, 48, 92, 0.16);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-brand: var(--brand);
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-accent: var(--accent);
+  --color-accent-50: var(--accent-50);
+  --color-accent-600: var(--accent-600);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -45,33 +54,41 @@ h1, h2, h3, h4 {
 }
 
 @layer components {
+  /* ---------- Düzen yardımcıları ---------- */
+  .container-site {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+  .eyebrow {
+    @apply inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider;
+    color: var(--accent-600);
+  }
+
   /* ---------- Butonlar ---------- */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer select-none whitespace-nowrap;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-all duration-150 cursor-pointer select-none whitespace-nowrap;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap text-white shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-all duration-150 cursor-pointer whitespace-nowrap text-white shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none;
     background-color: var(--brand-600);
   }
   .btn-primary:hover:not(:disabled) { background-color: var(--brand-700); }
 
-  /* Turuncu vurgu butonu (logo aksan rengi) — öne çıkan CTA'lar için */
   .btn-accent {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap text-white shadow-sm hover:shadow disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-all duration-150 cursor-pointer whitespace-nowrap text-white shadow-sm hover:shadow disabled:opacity-50;
     background-color: var(--accent);
   }
   .btn-accent:hover:not(:disabled) { background-color: var(--accent-600); }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap border bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-300 disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-all duration-150 cursor-pointer whitespace-nowrap border bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-300 disabled:opacity-50;
   }
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap text-slate-600 hover:bg-slate-100 hover:text-slate-900;
   }
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap bg-red-600 text-white shadow-sm hover:bg-red-700;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-150 cursor-pointer whitespace-nowrap bg-red-600 text-white shadow-sm hover:bg-red-700;
   }
-  .btn-sm { @apply px-3 py-1.5 text-xs; }
+  .btn-sm { @apply px-3.5 py-2 text-xs; }
 
   /* ---------- Form ---------- */
   .input {
@@ -90,8 +107,8 @@ h1, h2, h3, h4 {
     @apply rounded-xl border bg-white;
     box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.04);
   }
-  .card-hover { @apply transition-all duration-150 hover:-translate-y-0.5; }
-  .card-hover:hover { box-shadow: 0 4px 12px rgba(16, 24, 40, 0.08); }
+  .card-hover { @apply transition-all duration-200 hover:-translate-y-1; }
+  .card-hover:hover { box-shadow: 0 12px 28px rgba(16, 24, 40, 0.10); }
 
   /* ---------- Badge ---------- */
   .badge {
@@ -106,7 +123,7 @@ h1, h2, h3, h4 {
     @apply border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50/70;
   }
 
-  /* ---------- Sidebar link ---------- */
+  /* ---------- Admin kenar menü ---------- */
   .nav-link {
     @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900;
   }
@@ -115,9 +132,22 @@ h1, h2, h3, h4 {
     color: var(--brand-700);
   }
   .nav-link-active:hover { background-color: var(--brand-50); }
+
+  /* ---------- Zengin metin (blog/hizmet gövdesi) ---------- */
+  .prose-site h2 {
+    @apply mt-10 mb-3 text-2xl font-semibold text-slate-900;
+  }
+  .prose-site p {
+    @apply mb-4 leading-relaxed text-slate-600;
+  }
+  .prose-site ul {
+    @apply mb-4 list-disc space-y-1.5 pl-5 text-slate-600;
+  }
 }
 
 /* İnce kaydırma çubuğu */
 ::-webkit-scrollbar { height: 8px; width: 8px; }
-::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 8px; }
+::-webkit-scrollbar-thumb { background: #cbd3e0; border-radius: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
+
+html { scroll-behavior: smooth; }

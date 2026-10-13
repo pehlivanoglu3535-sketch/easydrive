@@ -4,46 +4,29 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { createSession, destroySession, verifyPassword } from "@/lib/auth";
 
-export type AuthState = { error?: string } | undefined;
+export type LoginState = { error?: string } | undefined;
 
-export async function loginAction(
-  _prev: AuthState,
-  formData: FormData
-): Promise<AuthState> {
-  const email = String(formData.get("email") || "")
-    .trim()
-    .toLowerCase();
+export async function loginAction(_prev: LoginState, formData: FormData): Promise<LoginState> {
+  const email = String(formData.get("email") || "").trim().toLowerCase();
   const password = String(formData.get("password") || "");
 
-  // Hata kodları döner; kullanıcıya gösterilen metin client'ta (dile göre) çevrilir.
   if (!email || !password) {
-    return { error: "missing" };
+    return { error: "E-posta ve şifre gerekli." };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
-    include: { company: true },
-  });
+  const user = await prisma.user.findUnique({ where: { email } });
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
-    return { error: "invalid" };
-  }
-
-  // Firma askıya alınmışsa (süper admin hariç) girişi engelle
-  if (user.role !== "SUPER_ADMIN" && user.company?.status === "SUSPENDED") {
-    return { error: "suspended" };
+    return { error: "E-posta veya şifre hatalı." };
   }
 
   await createSession({
     userId: user.id,
     role: user.role,
-    companyId: user.companyId,
-    branchId: user.branchId,
     name: user.name,
     email: user.email,
-    locale: user.locale,
   });
 
-  redirect(user.role === "SUPER_ADMIN" ? "/admin" : "/panel");
+  redirect("/admin");
 }
 
 export async function logoutAction() {
