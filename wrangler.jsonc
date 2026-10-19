@@ -19,5 +19,13 @@
       "database_name": "prokosova-db",
       "database_id": "f433332b-d500-4cef-855d-d401b193bc2f"
     }
+  ],
+  // Cloudflare R2 (nesne depolama) — başvuru belgeleri (pasaport, sabıka, fatura) burada saklanır.
+  // Cloudflare panelinde "prokosova-uploads" adında bir R2 bucket oluşturup bu binding'i bağlayın.
+  "r2_buckets": [
+    {
+      "binding": "UPLOADS",
+      "bucket_name": "prokosova-uploads"
+    }
   ]
 }

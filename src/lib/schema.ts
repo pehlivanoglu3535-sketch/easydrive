@@ -84,6 +84,38 @@ export const contactMessage = sqliteTable(
   (t) => [index("ContactMessage_status_idx").on(t.status)]
 );
 
+// ─────────── Application (Hizmet başvuru formu + belgeler) ───────────
+// Şirket kuruluşu gibi hizmetler için yapılandırılmış başvuru.
+// Belgeler (pasaport, sabıka, fatura) Cloudflare R2'de saklanır; burada sadece
+// R2 nesne anahtarları (key) tutulur. Dosyalar admin panelden güvenli indirilir.
+export const application = sqliteTable(
+  "Application",
+  {
+    id: id(),
+    serviceSlug: text("serviceSlug").notNull().default("sirket-kurulusu"),
+    // Başvuran / iletişim
+    applicantName: text("applicantName").notNull(),
+    applicantEmail: text("applicantEmail").notNull(),
+    applicantPhone: text("applicantPhone"),
+    // Şirket bilgileri
+    companyName: text("companyName"),
+    companyEmail: text("companyEmail"),
+    capital: text("capital"),
+    directorName: text("directorName"),
+    companyAddress: text("companyAddress"),
+    naceCodes: text("naceCodes"),
+    partnerAddress: text("partnerAddress"),
+    notes: text("notes"),
+    // Belgeler — R2 nesne anahtarları
+    passportKey: text("passportKey"),
+    criminalRecordKey: text("criminalRecordKey"),
+    utilityBillKey: text("utilityBillKey"),
+    status: text("status").$type<MessageStatus>().notNull().default("NEW"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("Application_status_idx").on(t.status)]
+);
+
 // ─────────── Appointment ───────────
 export const appointment = sqliteTable(
   "Appointment",
@@ -119,6 +151,7 @@ export const schema = {
   post,
   teamMember,
   contactMessage,
+  application,
   appointment,
   serviceRelations,
   contactMessageRelations,

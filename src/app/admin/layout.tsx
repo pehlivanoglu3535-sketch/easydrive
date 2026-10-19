@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { eq, count } from "drizzle-orm";
 import { requireAdmin } from "@/lib/auth";
 import { getDb } from "@/lib/db";
-import { contactMessage, appointment } from "@/lib/schema";
+import { contactMessage, appointment, application } from "@/lib/schema";
 import { AdminNav } from "@/components/admin/AdminNav";
 
 export const metadata: Metadata = {
@@ -14,21 +14,23 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   await requireAdmin();
 
   const db = getDb();
-  const [[m], [a]] = await Promise.all([
+  const [[m], [a], [ap]] = await Promise.all([
     db.select({ c: count() }).from(contactMessage).where(eq(contactMessage.status, "NEW")),
     db.select({ c: count() }).from(appointment).where(eq(appointment.status, "PENDING")),
+    db.select({ c: count() }).from(application).where(eq(application.status, "NEW")),
   ]);
   const messages = m?.c ?? 0;
   const appointments = a?.c ?? 0;
+  const applications = ap?.c ?? 0;
 
   return (
     <div className="min-h-screen bg-slate-50 lg:grid lg:grid-cols-[260px_1fr]">
       <aside className="sticky top-0 hidden h-screen border-r bg-white lg:block">
-        <AdminNav badges={{ messages, appointments }} />
+        <AdminNav badges={{ messages, appointments, applications }} />
       </aside>
       {/* Mobil üst bar */}
       <div className="border-b bg-white lg:hidden">
-        <AdminNav badges={{ messages, appointments }} />
+        <AdminNav badges={{ messages, appointments, applications }} />
       </div>
       <main className="min-w-0 p-5 sm:p-8">{children}</main>
     </div>

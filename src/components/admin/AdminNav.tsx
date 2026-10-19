@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, MessageSquare, Calendar, Newspaper, Briefcase, LogOut, ExternalLink,
+  LayoutDashboard, MessageSquare, FileText, Calendar, Newspaper, Briefcase, LogOut, ExternalLink,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { logoutAction } from "@/lib/actions/auth";
@@ -12,12 +12,13 @@ import { cn } from "@/lib/utils";
 const LINKS = [
   { href: "/admin", label: "Panel", icon: LayoutDashboard, exact: true },
   { href: "/admin/mesajlar", label: "Mesajlar", icon: MessageSquare, badgeKey: "messages" as const },
+  { href: "/admin/basvurular", label: "Başvurular", icon: FileText, badgeKey: "applications" as const },
   { href: "/admin/randevular", label: "Randevular", icon: Calendar, badgeKey: "appointments" as const },
   { href: "/admin/yazilar", label: "Yazılar", icon: Newspaper },
   { href: "/admin/hizmetler", label: "Hizmetler", icon: Briefcase },
 ];
 
-export function AdminNav({ badges }: { badges: { messages: number; appointments: number } }) {
+export function AdminNav({ badges }: { badges: { messages: number; appointments: number; applications: number } }) {
   const pathname = usePathname();
   const active = (href: string, exact?: boolean) =>
     exact ? pathname === href : pathname === href || pathname.startsWith(href + "/");

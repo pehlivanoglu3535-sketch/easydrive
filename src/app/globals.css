@@ -101,6 +101,14 @@ h1, h2, h3, h4 {
   .label {
     @apply mb-1.5 block text-sm font-medium text-slate-700;
   }
+  .file-input {
+    @apply w-full cursor-pointer rounded-lg border bg-white text-sm text-slate-600 shadow-sm outline-none transition;
+    @apply file:mr-3 file:cursor-pointer file:border-0 file:bg-brand-50 file:px-4 file:py-2.5 file:text-sm file:font-medium file:text-brand-700;
+  }
+  .file-input:focus {
+    border-color: var(--brand-600);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
 
   /* ---------- Kart ---------- */
   .card {

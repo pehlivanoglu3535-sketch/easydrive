@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { MessageSquare, Calendar, Newspaper, Briefcase, ArrowRight } from "lucide-react";
+import { MessageSquare, FileText, Calendar, Newspaper, Briefcase, ArrowRight } from "lucide-react";
 import { eq, count } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { contactMessage, appointment, post, service } from "@/lib/schema";
+import { contactMessage, appointment, post, service, application } from "@/lib/schema";
 import { getSession } from "@/lib/auth";
 import { formatDateTime, formatRelativeShort } from "@/lib/utils";
 
@@ -11,8 +11,9 @@ export default async function AdminDashboard() {
   const now = new Date();
 
   const db = getDb();
-  const [[nm], [pa], [pc], [sc], recentMessages, upcoming] = await Promise.all([
+  const [[nm], [na], [pa], [pc], [sc], recentMessages, upcoming] = await Promise.all([
     db.select({ c: count() }).from(contactMessage).where(eq(contactMessage.status, "NEW")),
+    db.select({ c: count() }).from(application).where(eq(application.status, "NEW")),
     db.select({ c: count() }).from(appointment).where(eq(appointment.status, "PENDING")),
     db.select({ c: count() }).from(post),
     db.select({ c: count() }).from(service),
@@ -24,11 +25,13 @@ export default async function AdminDashboard() {
     }),
   ]);
   const newMessages = nm?.c ?? 0;
+  const newApplications = na?.c ?? 0;
   const pendingAppts = pa?.c ?? 0;
   const postCount = pc?.c ?? 0;
   const serviceCount = sc?.c ?? 0;
 
   const stats = [
+    { label: "Yeni başvuru", value: newApplications, icon: FileText, href: "/admin/basvurular" },
     { label: "Yeni mesaj", value: newMessages, icon: MessageSquare, href: "/admin/mesajlar" },
     { label: "Bekleyen randevu", value: pendingAppts, icon: Calendar, href: "/admin/randevular" },
     { label: "Blog yazısı", value: postCount, icon: Newspaper, href: "/admin/yazilar" },
@@ -42,7 +45,7 @@ export default async function AdminDashboard() {
         <p className="mt-1 text-slate-500">Sitenizin güncel durumuna hızlı bir bakış.</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {stats.map((s) => (
           <Link key={s.label} href={s.href} className="card card-hover p-5">
             <div className="flex items-center justify-between">

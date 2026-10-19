@@ -4,8 +4,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { contactMessage, appointment, post, service } from "@/lib/schema";
+import { contactMessage, appointment, post, service, application } from "@/lib/schema";
 import { requireAdmin } from "@/lib/auth";
+import { getUploadsBucket } from "@/lib/r2";
 import { slugify } from "@/lib/utils";
 import type { MessageStatus, AppointmentStatus } from "@/lib/schema";
 
@@ -30,6 +31,44 @@ export async function deleteMessageAction(formData: FormData) {
   if (!id) return;
   await getDb().delete(contactMessage).where(eq(contactMessage.id, id));
   revalidatePath("/admin/mesajlar");
+  revalidatePath("/admin");
+}
+
+// ─────────── Başvurular ───────────
+
+export async function setApplicationStatusAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "");
+  const status = String(formData.get("status") || "") as MessageStatus;
+  if (!id || !MESSAGE_STATUSES.includes(status)) return;
+  await getDb().update(application).set({ status }).where(eq(application.id, id));
+  revalidatePath("/admin/basvurular");
+  revalidatePath("/admin");
+}
+
+export async function deleteApplicationAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+  const db = getDb();
+  const row = await db.query.application.findFirst({
+    where: (a, { eq: e }) => e(a.id, id),
+    columns: { passportKey: true, criminalRecordKey: true, utilityBillKey: true },
+  });
+  // Önce R2 belgelerini sil (varsa), sonra kaydı
+  if (row) {
+    const keys = [row.passportKey, row.criminalRecordKey, row.utilityBillKey].filter(Boolean) as string[];
+    if (keys.length) {
+      try {
+        const bucket = getUploadsBucket();
+        await Promise.all(keys.map((k) => bucket.delete(k)));
+      } catch (err) {
+        console.error("R2 belge silme hatası:", err);
+      }
+    }
+  }
+  await db.delete(application).where(eq(application.id, id));
+  revalidatePath("/admin/basvurular");
   revalidatePath("/admin");
 }
 
