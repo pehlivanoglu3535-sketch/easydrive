@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { application } from "@/lib/schema";
+import { notifyOwner } from "@/lib/notify";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,17 @@ export async function POST(request: Request) {
     console.error("Kurye başvuru kaydı hatası:", err);
     return NextResponse.json({ error: "Başvurunuz kaydedilemedi. Lütfen tekrar deneyin." }, { status: 500 });
   }
+
+  const lines = [
+    "🛵 Yeni Wolt Kurye Başvurusu",
+    `👤 ${name}`,
+    `📞 ${phone}`,
+    str(form, "city") ? `📍 ${str(form, "city")}` : "",
+    str(form, "age") ? `🎂 ${str(form, "age")} yaş` : "",
+    str(form, "vehicle") ? `🛵 ${str(form, "vehicle")}` : "",
+    str(form, "drivingLicense") ? `🪪 Ehliyet: ${str(form, "drivingLicense")}` : "",
+  ].filter(Boolean);
+  await notifyOwner(lines.join("\n"));
 
   return NextResponse.json({ ok: true });
 }

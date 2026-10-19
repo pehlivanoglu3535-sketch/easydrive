@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { application } from "@/lib/schema";
+import { notifyOwner } from "@/lib/notify";
 import {
   getUploadsBucket,
   buildFileKey,
@@ -119,6 +120,17 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+
+  const lines = [
+    "🏢 Yeni Şirket Kuruluşu Başvurusu",
+    `👤 ${applicantName}`,
+    applicantPhone ? `📞 ${applicantPhone}` : "",
+    applicantEmail ? `✉️ ${applicantEmail}` : "",
+    str(form, "companyName") ? `🏢 Şirket: ${str(form, "companyName")}` : "",
+    str(form, "capital") ? `💶 Sermaye: ${str(form, "capital")}` : "",
+    `📎 ${Object.keys(keys).length} belge yüklendi`,
+  ].filter(Boolean);
+  await notifyOwner(lines.join("\n"));
 
   return NextResponse.json({ ok: true });
 }

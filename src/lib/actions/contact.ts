@@ -2,6 +2,7 @@
 
 import { getDb } from "@/lib/db";
 import { contactMessage } from "@/lib/schema";
+import { notifyOwner } from "@/lib/notify";
 
 export type ContactState = { ok?: boolean; error?: string } | undefined;
 
@@ -37,12 +38,14 @@ export async function submitContactAction(
 
   const db = getDb();
   let serviceId: string | null = null;
+  let serviceTitle = "";
   if (serviceSlug) {
     const svc = await db.query.service.findFirst({
       where: (s, { eq }) => eq(s.slug, serviceSlug),
-      columns: { id: true },
+      columns: { id: true, title: true },
     });
     serviceId = svc?.id ?? null;
+    serviceTitle = svc?.title ?? "";
   }
 
   await db.insert(contactMessage).values({
@@ -55,6 +58,18 @@ export async function submitContactAction(
     kind,
     serviceId,
   });
+
+  const lines = [
+    kind === "quote" ? "💬 Yeni Teklif Talebi" : "📨 Yeni İletişim Mesajı",
+    `👤 ${name}`,
+    phone ? `📞 ${phone}` : "",
+    `✉️ ${email}`,
+    company ? `🏢 ${company}` : "",
+    serviceTitle ? `🧩 ${serviceTitle}` : "",
+    subject ? `📌 ${subject}` : "",
+    `📝 ${message}`,
+  ].filter(Boolean);
+  await notifyOwner(lines.join("\n"));
 
   return { ok: true };
 }
