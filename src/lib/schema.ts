@@ -105,6 +105,11 @@ export const application = sqliteTable(
     companyAddress: text("companyAddress"),
     naceCodes: text("naceCodes"),
     partnerAddress: text("partnerAddress"),
+    // Wolt kurye başvurusu alanları
+    city: text("city"),
+    age: text("age"),
+    vehicle: text("vehicle"),
+    drivingLicense: text("drivingLicense"),
     notes: text("notes"),
     // Belgeler — R2 nesne anahtarları
     passportKey: text("passportKey"),

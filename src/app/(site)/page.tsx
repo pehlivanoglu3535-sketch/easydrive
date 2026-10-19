@@ -182,8 +182,8 @@ export default async function HomePage() {
               >
                 <MessageCircle size={16} /> Kurye Başvurusu
               </a>
-              <Link href="/iletisim" className="btn border border-white/50 text-white hover:bg-white/10">
-                Bilgi Al <ArrowRight size={16} />
+              <Link href="/wolt-kurye" className="btn border border-white/50 text-white hover:bg-white/10">
+                Detaylar & Başvuru <ArrowRight size={16} />
               </Link>
             </div>
           </div>

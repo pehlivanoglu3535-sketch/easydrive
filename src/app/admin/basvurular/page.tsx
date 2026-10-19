@@ -38,7 +38,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/adm
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Başvurular</h1>
-        <p className="mt-1 text-slate-500">Şirket kuruluşu başvuru formundan gelen talepler ve belgeler.</p>
+        <p className="mt-1 text-slate-500">Şirket kuruluşu ve Wolt kurye başvuru formlarından gelen talepler.</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -58,21 +58,30 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/adm
       ) : (
         <div className="space-y-4">
           {items.map((a) => {
-            const docs = [
+            const isCourier = a.serviceSlug === "wolt-kurye";
+            const docs = isCourier ? [] : ([
               { label: "Pasaport", key: a.passportKey },
               { label: "Sabıka kaydı", key: a.criminalRecordKey },
               { label: "Ev faturası", key: a.utilityBillKey },
-            ].filter((d) => d.key) as { label: string; key: string }[];
+            ].filter((d) => d.key) as { label: string; key: string }[]);
 
-            const info = [
-              ["Şirket ismi", a.companyName],
-              ["Şirket maili", a.companyEmail],
-              ["Sermaye", a.capital],
-              ["Müdür", a.directorName],
-              ["Şirket adresi", a.companyAddress],
-              ["NACE kodları", a.naceCodes],
-              ["Ortağın Türkiye adresi", a.partnerAddress],
-            ].filter(([, v]) => v) as [string, string][];
+            const info = (isCourier
+              ? [
+                  ["Şehir", a.city],
+                  ["Yaş", a.age],
+                  ["Araç", a.vehicle],
+                  ["Ehliyet", a.drivingLicense],
+                ]
+              : [
+                  ["Şirket ismi", a.companyName],
+                  ["Şirket maili", a.companyEmail],
+                  ["Sermaye", a.capital],
+                  ["Müdür", a.directorName],
+                  ["Şirket adresi", a.companyAddress],
+                  ["NACE kodları", a.naceCodes],
+                  ["Ortağın Türkiye adresi", a.partnerAddress],
+                ]
+            ).filter(([, v]) => v) as [string, string][];
 
             return (
               <div key={a.id} className="card p-5">
@@ -80,11 +89,13 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/adm
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="font-semibold text-slate-900">{a.applicantName}</h3>
-                      <span className="badge bg-brand-50 text-brand-700 ring-brand-100">Başvuru</span>
+                      {isCourier
+                        ? <span className="badge bg-cyan-50 text-cyan-700 ring-cyan-200">Wolt Kurye</span>
+                        : <span className="badge bg-brand-50 text-brand-700 ring-brand-100">Şirket Kuruluşu</span>}
                       <span className={`badge ${badgeClass[a.status]}`}>{MESSAGE_STATUS_TR[a.status]}</span>
                     </div>
                     <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
-                      <a href={`mailto:${a.applicantEmail}`} className="inline-flex items-center gap-1.5 hover:text-brand-700"><Mail size={14} /> {a.applicantEmail}</a>
+                      {a.applicantEmail && <a href={`mailto:${a.applicantEmail}`} className="inline-flex items-center gap-1.5 hover:text-brand-700"><Mail size={14} /> {a.applicantEmail}</a>}
                       {a.applicantPhone && <a href={`tel:${a.applicantPhone}`} className="inline-flex items-center gap-1.5 hover:text-brand-700"><Phone size={14} /> {a.applicantPhone}</a>}
                     </div>
                   </div>
@@ -109,22 +120,24 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/adm
                   </div>
                 )}
 
-                <div className="mt-4 border-t pt-4">
-                  <div className="mb-2 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-slate-400">
-                    <FileText size={13} /> Belgeler
-                  </div>
-                  {docs.length === 0 ? (
-                    <p className="text-sm text-slate-400">Belge yüklenmemiş.</p>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {docs.map((d) => (
-                        <a key={d.key} href={dosyaUrl(d.key)} target="_blank" rel="noreferrer" className="btn-ghost btn-sm">
-                          <Download size={14} /> {d.label}
-                        </a>
-                      ))}
+                {!isCourier && (
+                  <div className="mt-4 border-t pt-4">
+                    <div className="mb-2 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-slate-400">
+                      <FileText size={13} /> Belgeler
                     </div>
-                  )}
-                </div>
+                    {docs.length === 0 ? (
+                      <p className="text-sm text-slate-400">Belge yüklenmemiş.</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {docs.map((d) => (
+                          <a key={d.key} href={dosyaUrl(d.key)} target="_blank" rel="noreferrer" className="btn-ghost btn-sm">
+                            <Download size={14} /> {d.label}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="mt-4 flex flex-wrap items-center gap-2 border-t pt-3">
                   {(["READ", "REPLIED", "ARCHIVED"] as MessageStatus[])
