@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   ArrowRight, Check, CheckCircle2, Quote, Target, Lightbulb,
-  TrendingUp, ShieldCheck, Users, ChevronRight,
+  ShieldCheck, Users, ChevronRight,
 } from "lucide-react";
 import { getDb } from "@/lib/db";
 import { ServiceIcon } from "@/components/ServiceIcon";
@@ -74,36 +74,28 @@ export default async function HomePage() {
             </ul>
           </div>
 
-          {/* Görsel kart */}
-          <div className="relative">
-            <div className="card p-6 shadow-xl shadow-brand-100/50">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-500">Başarı Panosu</span>
-                <span className="badge bg-emerald-50 text-emerald-700 ring-emerald-200">6+ yıl Kosova</span>
-              </div>
-              <div className="mt-5 flex items-end gap-2.5">
-                {[38, 52, 46, 64, 58, 78, 92].map((h, i) => (
-                  <div key={i} className="flex-1">
-                    <div className="rounded-t-md bg-gradient-to-t from-brand-600 to-brand-700/80" style={{ height: `${h}px` }} />
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                {[["Kurulan şirket", "600+", "text-brand-700"], ["Alınan oturum", "820+", "text-emerald-600"]].map(([l, v, c]) => (
-                  <div key={l} className="rounded-xl border bg-slate-50/60 p-4">
-                    <div className="text-xs text-slate-400">{l}</div>
-                    <div className={`mt-1 text-xl font-bold ${c}`}>{v}</div>
-                  </div>
-                ))}
-              </div>
+          {/* Görsel: kurucu portresi */}
+          <div className="relative mx-auto w-full max-w-md">
+            <div className="overflow-hidden rounded-3xl shadow-xl shadow-brand-100/50 ring-1 ring-slate-900/5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/ekip/bulent-bozkurt-sehir.jpg"
+                alt={`${site.owner.name} — ${site.owner.title}`}
+                width={760}
+                height={1017}
+                className="h-full w-full object-cover"
+              />
             </div>
-            <div className="card absolute -bottom-6 -left-6 hidden items-center gap-3 p-4 sm:flex">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-50 text-accent-600">
-                <TrendingUp size={20} />
-              </div>
+            {/* Yüzen güven kartı: 6+ yıl */}
+            <div className="card absolute -top-4 -right-4 hidden px-4 py-3 text-center sm:block">
+              <div className="text-2xl font-bold text-brand-700">6+ yıl</div>
+              <div className="text-xs text-slate-500">Kosova tecrübesi</div>
+            </div>
+            {/* Yüzen isim kartı */}
+            <div className="card absolute -bottom-5 left-4 right-4 flex items-center gap-3 p-4 sm:-left-6 sm:right-auto">
               <div>
-                <div className="text-sm font-semibold text-slate-900">600+ şirket</div>
-                <div className="text-xs text-slate-500">başarıyla kuruldu</div>
+                <div className="text-sm font-semibold text-slate-900">{site.owner.name}</div>
+                <div className="text-xs text-accent-600">{site.owner.title}</div>
               </div>
             </div>
           </div>
