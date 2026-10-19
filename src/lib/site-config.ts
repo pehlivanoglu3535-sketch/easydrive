@@ -6,6 +6,7 @@
 export const site = {
   name: "ProKosova Solutions",
   shortName: "ProKosova",
+  url: "https://kosovadayasam.com",
   tagline: "Kosova'da iş kurmanın ve yaşamanın en kolay yolu",
   description:
     "6 yıldır Kosova'da; 600'den fazla şirket kuruluşu ve 820'den fazla oturum başvurusuyla yabancı girişimci ve yatırımcıların güvenilir danışmanı.",
