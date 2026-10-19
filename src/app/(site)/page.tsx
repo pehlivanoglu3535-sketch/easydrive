@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   ArrowRight, Check, CheckCircle2, Quote, Target, Lightbulb,
   ShieldCheck, Users, ChevronRight,
+  Bike, MessageCircle, Clock, HandCoins, BadgeCheck, Zap,
 } from "lucide-react";
 import { getDb } from "@/lib/db";
 import { ServiceIcon } from "@/components/ServiceIcon";
@@ -21,6 +22,13 @@ const APPROACH = [
   { icon: Lightbulb, title: "Veriye dayalı", desc: "Kararlarımızı sezgiyle değil, analiz ve gerçek verilerle alıyoruz." },
   { icon: ShieldCheck, title: "Güvenilir", desc: "Gizlilik, şeffaflık ve mevzuata tam uyum çalışma biçimimizin temeli." },
   { icon: Users, title: "Uçtan uca", desc: "Strateji aşamasından uygulamaya kadar yanınızda olan bir ekip." },
+];
+
+const FLEET = [
+  { icon: Clock, title: "Esnek çalışma", desc: "Kendi saatlerini sen belirle; tam veya yarı zamanlı çalış." },
+  { icon: HandCoins, title: "Düzenli kazanç", desc: "Şeffaf ve zamanında ödeme; çalıştıkça kazan." },
+  { icon: BadgeCheck, title: "Resmi acente desteği", desc: "Tüm kayıt, evrak ve başvuru işlemleri bizden." },
+  { icon: Zap, title: "Hızlı başvuru", desc: "Kısa sürede onaylan, hemen sahaya çık." },
 ];
 
 const STEPS = [
@@ -136,6 +144,51 @@ export default async function HomePage() {
               Hizmetleri keşfedin <ChevronRight size={15} className="transition-transform group-hover:translate-x-0.5" />
             </span>
           </Link>
+        </div>
+      </section>
+
+      {/* Fleet Delivery — Resmi Wolt Acentesi */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#00c2e8] to-[#008fcf] text-white">
+        <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
+        <div className="container-site grid items-center gap-12 py-16 md:py-20 lg:grid-cols-2">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide ring-1 ring-white/25">
+              <Bike size={14} /> Fleet Delivery · Priştine Resmi Wolt Acentesi
+            </span>
+            <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">
+              Priştine&apos;de Wolt kuryesi olun, kazanmaya hemen başlayın
+            </h2>
+            <p className="mt-4 max-w-xl text-white/90">
+              <span className="font-semibold">Fleet Delivery</span>, Priştine&apos;nin resmi Wolt
+              acentesidir. Wolt kurye alımını biz yürütüyoruz; başvurudan kayıt, evrak ve ekipmana
+              kadar tüm süreçte yanınızdayız — siz sadece kazanmaya odaklanın.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href={`https://wa.me/${site.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent("Merhaba, Fleet Delivery - Wolt kurye başvurusu yapmak istiyorum.")}`}
+                target="_blank"
+                rel="noreferrer"
+                className="btn bg-white font-semibold text-slate-900 hover:bg-white/90"
+              >
+                <MessageCircle size={16} /> Kurye Başvurusu
+              </a>
+              <Link href="/iletisim" className="btn border border-white/50 text-white hover:bg-white/10">
+                Bilgi Al <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {FLEET.map((f) => (
+              <div key={f.title} className="rounded-2xl bg-white/10 p-5 ring-1 ring-white/20 backdrop-blur-sm">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/20">
+                  <f.icon size={22} />
+                </div>
+                <h3 className="mt-4 font-semibold">{f.title}</h3>
+                <p className="mt-1 text-sm text-white/85">{f.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
