@@ -231,6 +231,6 @@ export const team = [
     title: "Kurucu & Baş Danışman",
     bio: "6 yılı aşkın süredir Kosova'da yabancı girişimci ve yatırımcılara danışmanlık veriyor; 600+ şirket kuruluşu ve 820+ oturum başvurusuna liderlik etti.",
     order: 1,
-    email: "bulent@prokosovasolutions.com",
+    email: "bulent@kosovadayasam.com",
   },
 ];

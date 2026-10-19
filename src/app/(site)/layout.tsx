@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { WhatsAppFab } from "@/components/WhatsAppFab";
 
 export default function SiteLayout({ children }: LayoutProps<"/">) {
   return (
@@ -7,6 +8,7 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
       <SiteHeader />
       <main className="flex-1">{children}</main>
       <SiteFooter />
+      <WhatsAppFab />
     </div>
   );
 }

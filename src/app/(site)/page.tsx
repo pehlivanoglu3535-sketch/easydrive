@@ -39,7 +39,7 @@ const TESTIMONIALS = [
 export default async function HomePage() {
   const db = getDb();
   const [services, posts] = await Promise.all([
-    db.query.service.findMany({ where: (s, { eq }) => eq(s.published, true), orderBy: (s, { asc }) => asc(s.order), limit: 4 }),
+    db.query.service.findMany({ where: (s, { eq }) => eq(s.published, true), orderBy: (s, { asc }) => asc(s.order), limit: 6 }),
     db.query.post.findMany({ where: (p, { eq }) => eq(p.published, true), orderBy: (p, { desc }) => desc(p.publishedAt), limit: 3 }),
   ]);
 
@@ -116,10 +116,10 @@ export default async function HomePage() {
           <span className="eyebrow">Hizmetlerimiz</span>
           <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Tek çatı altında uzmanlık</h2>
           <p className="mt-4 text-slate-600">
-            Dört ana alanda, kurumunuzun her ihtiyacına yanıt veren bütüncül danışmanlık.
+            Farklı alanlarda, kurumunuzun her ihtiyacına yanıt veren bütüncül danışmanlık.
           </p>
         </div>
-        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s) => {
             return (
               <Link key={s.id} href={`/hizmetler/${s.slug}`} className="card card-hover group flex flex-col p-6">
@@ -134,6 +134,16 @@ export default async function HomePage() {
               </Link>
             );
           })}
+          {/* Tüm hizmetler CTA kartı */}
+          <Link href="/hizmetler" className="card card-hover group flex flex-col justify-center bg-brand-700 p-6 text-white">
+            <h3 className="text-lg font-semibold">Tüm hizmetlerimiz</h3>
+            <p className="mt-2 flex-1 text-sm leading-relaxed text-brand-100">
+              İhtiyacınıza en uygun çözümü birlikte belirleyelim.
+            </p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold">
+              Hizmetleri keşfedin <ChevronRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </Link>
         </div>
       </section>
 

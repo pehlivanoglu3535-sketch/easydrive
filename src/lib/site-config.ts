@@ -10,9 +10,9 @@ export const site = {
   description:
     "6 yıldır Kosova'da; 600'den fazla şirket kuruluşu ve 820'den fazla oturum başvurusuyla yabancı girişimci ve yatırımcıların güvenilir danışmanı.",
   // İletişim
-  email: "info@prokosovasolutions.com",
-  phone: "+383 49 000 000",
-  phoneHref: "+38349000000",
+  email: "info@kosovadayasam.com",
+  phone: "+383 49 368 622",
+  phoneHref: "+38349368622",
   whatsapp: "+383 49 368 622",
   address: "Rr. Nëna Terezë, Prishtina, Kosova",
   mapQuery: "Prishtina, Kosovo",
