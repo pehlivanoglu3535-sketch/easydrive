@@ -13,7 +13,7 @@ export const site = {
   email: "info@prokosovasolutions.com",
   phone: "+383 49 000 000",
   phoneHref: "+38349000000",
-  whatsapp: "+383 49 000 000",
+  whatsapp: "+383 49 368 622",
   address: "Rr. Nëna Terezë, Prishtina, Kosova",
   mapQuery: "Prishtina, Kosovo",
   workingHours: "Pazartesi – Cuma, 09:00 – 18:00",
