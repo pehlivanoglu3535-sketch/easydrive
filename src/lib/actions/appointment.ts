@@ -3,6 +3,8 @@
 import { getDb } from "@/lib/db";
 import { appointment } from "@/lib/schema";
 import { isValidSlot } from "@/lib/appointments";
+import { notifyOwnerWhatsApp } from "@/lib/notify";
+import { formatDateTime } from "@/lib/utils";
 
 export type AppointmentState = { ok?: boolean; error?: string } | undefined;
 
@@ -46,12 +48,14 @@ export async function bookAppointmentAction(
   }
 
   let serviceId: string | null = null;
+  let serviceTitle = "";
   if (serviceSlug) {
     const svc = await db.query.service.findFirst({
       where: (s, { eq }) => eq(s.slug, serviceSlug),
-      columns: { id: true },
+      columns: { id: true, title: true },
     });
     serviceId = svc?.id ?? null;
+    serviceTitle = svc?.title ?? "";
   }
 
   await db.insert(appointment).values({
@@ -62,6 +66,18 @@ export async function bookAppointmentAction(
     slot,
     serviceId,
   });
+
+  // Site sahibine WhatsApp bildirimi (yapılandırılmışsa)
+  const lines = [
+    "📅 Yeni Randevu Talebi",
+    `👤 ${name}`,
+    phone ? `📞 ${phone}` : "",
+    `✉️ ${email}`,
+    `🕒 ${formatDateTime(slot)}`,
+    serviceTitle ? `🧩 ${serviceTitle}` : "",
+    note ? `📝 ${note}` : "",
+  ].filter(Boolean);
+  await notifyOwnerWhatsApp(lines.join("\n"));
 
   return { ok: true };
 }
