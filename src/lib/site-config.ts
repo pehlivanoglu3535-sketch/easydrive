@@ -28,6 +28,8 @@ export const site = {
   owner: {
     name: "Bülent BOZKURT",
     title: "Kurucu & Baş Danışman",
+    photo: "/ekip/bulent-bozkurt.jpg",
+    portrait: "/ekip/bulent-bozkurt-portre.jpg",
     bio: "6 yılı aşkın süredir Kosova'da yabancı girişimci ve yatırımcılara danışmanlık veriyor. Bugüne kadar 600'den fazla şirketin kuruluşuna ve 820'den fazla oturum başvurusuna liderlik etti. Yerel mevzuata hâkimiyeti ve uçtan uca takip anlayışıyla, Kosova'da iş kurmak isteyenlerin en güvendiği isimlerden biri.",
   },
   // Öne çıkan istatistikler (ana sayfa + hakkımızda)

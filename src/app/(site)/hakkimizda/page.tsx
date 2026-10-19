@@ -16,10 +16,6 @@ const VALUES = [
   { icon: Heart, title: "Değerlerimiz", desc: "Dürüstlük, gizlilik, yerel uzmanlık ve müşterimizin başarısını kendi başarımız sayma anlayışı." },
 ];
 
-function initials(name: string) {
-  return name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
-}
-
 export default function AboutPage() {
   return (
     <>
@@ -37,7 +33,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Hikaye + istatistik */}
+      {/* Hikaye + portre */}
       <section className="container-site grid gap-12 py-16 md:py-20 lg:grid-cols-2 lg:items-center">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Biz kimiz?</h2>
@@ -55,24 +51,51 @@ export default function AboutPage() {
           </div>
           <Link href="/iletisim" className="btn-primary mt-7">Bizimle çalışın <ArrowRight size={16} /></Link>
         </div>
-        <div className="grid grid-cols-2 gap-5">
-          {site.stats.map((s) => (
-            <div key={s.label} className="card flex flex-col items-center justify-center p-8 text-center">
-              <div className="text-4xl font-bold text-brand-700">{s.value}</div>
-              <div className="mt-2 text-sm text-slate-500">{s.label}</div>
-            </div>
-          ))}
+        <div className="relative mx-auto w-full max-w-sm">
+          <div className="overflow-hidden rounded-2xl shadow-xl shadow-brand-100/50">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={site.owner.portrait}
+              alt={`${site.owner.name} — ${site.owner.title}`}
+              width={760}
+              height={1017}
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <div className="absolute -bottom-4 left-4 right-4 rounded-xl border bg-white/95 p-4 text-center shadow-lg backdrop-blur">
+            <div className="font-semibold text-slate-900">{site.owner.name}</div>
+            <div className="text-sm text-accent-600">{site.owner.title}</div>
+          </div>
+        </div>
+      </section>
+
+      {/* İstatistikler */}
+      <section className="border-t bg-slate-50">
+        <div className="container-site py-14">
+          <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+            {site.stats.map((s) => (
+              <div key={s.label} className="card flex flex-col items-center justify-center p-8 text-center">
+                <div className="text-4xl font-bold text-brand-700">{s.value}</div>
+                <div className="mt-2 text-sm text-slate-500">{s.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Kurucu */}
-      <section className="border-y bg-slate-50">
+      <section className="border-t bg-white">
         <div className="container-site py-16 md:py-20">
           <div className="mx-auto max-w-3xl">
             <div className="card flex flex-col items-center gap-6 p-8 text-center sm:flex-row sm:text-left">
-              <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-brand-600 text-3xl font-bold text-white">
-                {initials(site.owner.name)}
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={site.owner.photo}
+                alt={`${site.owner.name} — ${site.owner.title}`}
+                width={112}
+                height={112}
+                className="h-28 w-28 shrink-0 rounded-full object-cover ring-4 ring-brand-100"
+              />
               <div>
                 <span className="eyebrow">Kurucu</span>
                 <h3 className="mt-1 text-2xl font-bold">{site.owner.name}</h3>
