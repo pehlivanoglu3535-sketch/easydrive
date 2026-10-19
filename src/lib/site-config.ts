@@ -15,8 +15,8 @@ export const site = {
   phone: "+383 49 368 622",
   phoneHref: "+38349368622",
   whatsapp: "+383 49 368 622",
-  address: "Rr. Nëna Terezë, Prishtina, Kosova",
-  mapQuery: "Prishtina, Kosovo",
+  address: "23 Miloti, Prishtinë 10000, Kosova",
+  mapQuery: "23 Miloti, Prishtinë 10000, Kosova",
   workingHours: "Pazartesi – Cuma, 09:00 – 18:00",
   // Sosyal
   social: {

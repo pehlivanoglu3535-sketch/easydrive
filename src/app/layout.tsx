@@ -67,8 +67,9 @@ const jsonLd = {
   priceRange: "$$",
   address: {
     "@type": "PostalAddress",
-    streetAddress: site.address,
-    addressLocality: "Prishtina",
+    streetAddress: "23 Miloti",
+    addressLocality: "Prishtinë",
+    postalCode: "10000",
     addressCountry: "XK",
   },
   areaServed: { "@type": "Country", name: "Kosova" },

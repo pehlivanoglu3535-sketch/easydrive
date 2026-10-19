@@ -152,10 +152,20 @@ export default async function HomePage() {
         <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
         <div className="container-site grid items-center gap-12 py-16 md:py-20 lg:grid-cols-2">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide ring-1 ring-white/25">
-              <Bike size={14} /> Fleet Delivery · Priştine Resmi Wolt Acentesi
-            </span>
-            <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">
+            <div className="inline-flex rounded-2xl bg-white p-3.5 shadow-xl ring-1 ring-black/5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/fleet-delivery-logo.png"
+                alt="Fleet Delivery — Wolt Resmi Acentesi"
+                width={112}
+                height={115}
+                className="h-24 w-auto"
+              />
+            </div>
+            <p className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/90">
+              <Bike size={15} /> Priştine · Resmi Wolt Acentesi
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
               Priştine&apos;de Wolt kuryesi olun, kazanmaya hemen başlayın
             </h2>
             <p className="mt-4 max-w-xl text-white/90">
