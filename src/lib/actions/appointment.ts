@@ -3,7 +3,7 @@
 import { getDb } from "@/lib/db";
 import { appointment } from "@/lib/schema";
 import { isValidSlot } from "@/lib/appointments";
-import { notifyOwnerWhatsApp } from "@/lib/notify";
+import { notifyOwner } from "@/lib/notify";
 import { formatDateTime } from "@/lib/utils";
 
 export type AppointmentState = { ok?: boolean; error?: string } | undefined;
@@ -77,7 +77,7 @@ export async function bookAppointmentAction(
     serviceTitle ? `🧩 ${serviceTitle}` : "",
     note ? `📝 ${note}` : "",
   ].filter(Boolean);
-  await notifyOwnerWhatsApp(lines.join("\n"));
+  await notifyOwner(lines.join("\n"));
 
   return { ok: true };
 }
